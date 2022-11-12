@@ -7,13 +7,18 @@
     <groupId>asher</groupId>
     <artifactId>greek-clash-td</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <inceptionYear>2020</inceptionYear>
 
     <properties>
         <jackson.version>2.13.3</jackson.version>
         <kotlin.version>1.6.21</kotlin.version>
         <javafx.version>15.0.1</javafx.version>
 
-        <main.class>asher.greek.ui.LevelAppKt</main.class>
+        <main.class>asher.greek.ui.GameAppKt</main.class>
+
+        <!-- set license attributes for license plugin -->
+        <license.organizationName>Elisha Peterson and Asher Peterson</license.organizationName>
+        <license.licenseName>apache_v2</license.licenseName>
     </properties>
 
     <dependencies>
@@ -142,6 +147,30 @@
                     <source>11</source>
                     <target>11</target>
                 </configuration>
+            </plugin>
+
+            <!-- Automatically update file headers, and add license file to distribution -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.20</version>
+                <configuration>
+                    <roots>
+                        <root>src/main/kotlin</root>
+                        <root>src/test/kotlin</root>
+                    </roots>
+                    <canUpdateCopyright>true</canUpdateCopyright>
+                    <sectionDelimiter>--</sectionDelimiter>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>update-project-license</goal>
+                            <goal>update-file-header</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
