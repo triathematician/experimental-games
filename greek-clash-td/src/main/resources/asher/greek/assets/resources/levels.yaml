@@ -1,0 +1,102 @@
+levels:
+  - name: Alpha
+    startingFunds: 300
+    path: [ [0, 200], [200, 250], [400, 200] ]
+    waves:
+      - attackers:
+          Skeleton Jr: 0 100 200
+#        defenders:
+          #Skeleton with Stick: [ [150, 210], [250, 210] ]
+      - attackers:
+          Skeleton Jr: 0 100 200
+#        defenders:
+          #Skeleton with Bow & Arrow: [ [200, 200] ]
+      - attackers:
+          Skeleton: 0 100 200
+#        defenders:
+          #Skeleton with Gun: [ [200, 200] ]
+      - attackers:
+          Skeleton: 5@0+50
+#        defenders:
+          #Skeleton with Gun: [ [200, 200] ]
+      - attackers:
+          Skeleton: 10@0+25
+#        defenders:
+          #Skeleton with Machine Gun: [ [200, 200] ]
+      - attackers:
+          Skeleton: 10@0+25 10@10+25
+          Hell Hound: 6@80+10 6@180+10
+#        defenders:
+          #Skeleton with Machine Gun: [ [200, 200] ]
+      - attackers:
+          Skeleton Jr: 100@0+5
+          Skeleton: 10@0+10 10@150+10
+          Hell Hound: 8@80+10 8@180+10 8@280+10
+          Harpy: 40@200+20
+          Cerberus: 4@0+150
+#        defenders:
+          #Skeleton Goo Gun: [ [100, 250], [300, 250] ]
+          #Skeleton with Machine Gun: [ [200, 220], [300, 200] ]
+          #Skeleton Turret: [ [100, 200], [150, 210], [250, 210], [350, 190] ]
+          #Demigod: [ [200, 270] ]
+  - name: Beta
+    startingFunds: 500
+    path: [ [0, 200], [100, 100], [200, 300], [400, 200] ]
+    waves:
+      - attackers:
+          Skeleton: 6@100+25
+      - attackers:
+          Skeleton: 12@100+25
+      - attackers:
+          Harpy: 6@200+20
+      - attackers:
+          Skeleton: 10@100+25
+          Harpy: 4@200+20
+      - attackers:
+          Hell Hound: 6@280+10
+      - attackers:
+          Skeleton: 10@100+25
+          Hell Hound: 6@280+10
+      - attackers:
+          Cerberus: 0 100 200
+      - attackers:
+          Skeleton: 10@100+25
+          Harpy: 6@200+20
+      - attackers:
+          Cerberus: 0 100 200
+          Skeleton: 10@100+25
+          Harpy: 6@200+20
+      - attackers:
+          Hell Hound: 6@280+10 6@380+10
+      - attackers:
+          Cerberus: 0 100 200
+          Hell Hound: 6@280+10 6@380+10
+      - attackers:
+          Cerberus: 0 100 200
+          Skeleton: 10@100+25
+          Harpy: 6@200+20
+          Hell Hound: 6@280+10 6@380+10
+#        defenders:
+          #Skeleton with Stick: [ [25, 225] ]
+          #Skeleton with Gun: [ [200, 250] ]
+          #Skeleton with Machine Gun: [ [125, 75] ]
+          #Skeleton Turret: [ [300, 300], [200, 350] ]
+          #Skeleton Goo Gun: [ [50, 100], [190, 170] ]
+          #Skeleton Rock Band: [ [100, 170] ]
+  - name: Gamma
+    startingFunds: 1000
+    path: [ [0, 200], [200, 200], [200, 100], [100, 100], [100, 300], [300, 300], [300, 200], [400, 200] ]
+    waves:
+      - attackers:
+          Skeleton: 10@0+25
+        defenders:
+          Skeleton Rock Band: [ [150, 150] ]
+      - attackers:
+          Skeleton: 10@0+25
+          Hell Hound: 6@80+10, 6@180+10
+#        defenders:
+          #Skeleton Rock Band: [ [150, 150] ]
+          #Skeleton Turret: [ [200, 250] ]
+          #Skeleton with Machine Gun: [ [75, 225] ]
+          #Skeleton Goo Gun: [ [125, 250], [225, 150] ]
+

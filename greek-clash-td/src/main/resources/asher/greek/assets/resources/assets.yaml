@@ -1,0 +1,99 @@
+attackers:
+
+  - name: Skeleton Jr
+    type: Warrior
+    speed: 0.6
+    hitPoints: 50
+    color: LIGHTGRAY
+
+  - name: Skeleton
+    type: Warrior
+    speed: 0.8
+    hitPoints: 75
+    color: SLATEGRAY
+
+  - name: Harpy
+    type: Flying
+    speed: 1.4
+    hitPoints: 100
+    color: DARKORANGE
+
+  - name: Hell Hound
+    type: Speed
+    speed: 2.0
+    hitPoints: 200
+    color: BLACK
+
+  - name: Cerberus
+    type: Boss
+    speed: 0.4
+    hitPoints: 5000
+    color: DARKRED
+
+defenders:
+
+  - name: Skeleton with Stick
+    type: Ranged
+    fireRate: 50
+    range: 50
+    attackPower: 10
+    cost: 50
+    color: GRAY
+
+  - name: Skeleton with Bow & Arrow
+    type: Ranged
+    fireRate: 50
+    range: 75
+    attackPower: 30
+    cost: 200
+    color: SANDYBROWN
+
+  - name: Skeleton with Gun
+    type: Ranged
+    fireRate: 40
+    range: 100
+    attackPower: 50
+    cost: 300
+    color: SANDYBROWN
+
+  - name: Skeleton with Machine Gun
+    type: Ranged
+    fireRate: 20
+    range: 125
+    attackPower: 80
+    cost: 500
+    color: SADDLEBROWN
+
+  - name: Skeleton Turret
+    type: Ranged
+    fireRate: 10
+    range: 150
+    attackPower: 100
+    cost: 1000
+    color: ROSYBROWN
+
+  - name: Skeleton Goo Gun
+    type: Ranged Slow
+    fireRate: 20
+    range: 75
+    attackPower: 0
+    slowPower: 0.7
+    cost: 300
+    color: STEELBLUE
+
+  - name: Skeleton Rock Band
+    type: Radial
+    fireRate: 50
+    range: 75
+    attackPower: 20
+    areaAttack: true
+    cost: 800
+    color: GREENYELLOW
+
+  - name: Demigod
+    type: Ranged
+    fireRate: 100
+    range: 100
+    attackPower: 1000
+    cost: 2000
+    color: GOLD
