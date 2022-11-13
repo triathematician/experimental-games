@@ -19,13 +19,14 @@
  */
 package asher.greek.ui
 
-import asher.greek.components.Game
+import asher.greek.components.GameState
 import javafx.scene.Scene
 import tornadofx.*
 
-class GameView(val game: Game = Game()) : View() {
+class GameView(val game: GameState = GameState()) : View() {
 
-    val levelGraphics = LevelPane(game)
+    val controller = GameController(game)
+    val levelGraphics = LevelPane(game, controller)
 
     override val root = borderpane {
         top = toolbar {

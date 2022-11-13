@@ -37,7 +37,7 @@ class LevelBackgroundGraphics(level: Level, toolDragger: DefenderDraggerTool): G
         }
         setOnMouseExited {
             toolDragger.isVisible = false
-            toolDragger.defenderGraphic = null
+            toolDragger.previewGraphic = null
         }
     }
 }

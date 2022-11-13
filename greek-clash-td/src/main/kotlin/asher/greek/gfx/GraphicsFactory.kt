@@ -21,8 +21,6 @@ package asher.greek.gfx
 
 import asher.greek.components.*
 import asher.greek.util.*
-import com.sun.javafx.geom.Area
-import com.sun.javafx.tk.Toolkit
 import javafx.animation.FadeTransition
 import javafx.scene.Group
 import javafx.scene.Node
@@ -31,7 +29,6 @@ import javafx.scene.shape.*
 import javafx.scene.text.Text
 import javafx.util.Duration
 import tornadofx.doubleBinding
-import java.awt.BasicStroke
 import java.awt.geom.Rectangle2D
 
 /** Creates visual elements for display. */
@@ -59,9 +56,9 @@ object GraphicsFactory {
         }
     }
 
-    fun Defender.createGraphics(size: Double = 15.0) = DefenderGraphic(this, size, palette = false)
+    fun Defender.createGraphics(size: Double = 15.0) = DefenderGraphic(this, size, isOnPalette = false)
 
-    fun Defender.createPaletteGraphics(size: Double = 15.0) = DefenderGraphic(this, size, palette = true)
+    fun Defender.createPaletteGraphics(size: Double = 15.0) = DefenderGraphic(this, size, isOnPalette = true)
 
     fun Attacker.createGraphics() = Group().apply {
         val circle = circle(position.point!!, 8.0, color)

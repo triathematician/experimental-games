@@ -19,7 +19,7 @@
  */
 package asher.greek.ui
 
-import asher.greek.components.Game
+import asher.greek.components.GameState
 import asher.greek.gfx.GraphicsFactory.PALETTE_BOUNDS
 import javafx.application.Application
 import javafx.scene.Scene
@@ -29,7 +29,8 @@ import javafx.stage.Stage
 
 class LevelApp: Application() {
     override fun start(stage: Stage) {
-        val levelGraphics = LevelPane(Game())
+        val g = GameState()
+        val levelGraphics = LevelPane(g, GameController(g))
         val gamePane = BorderPane().apply {
             top = DefenderPalette(PALETTE_BOUNDS)
             center = levelGraphics

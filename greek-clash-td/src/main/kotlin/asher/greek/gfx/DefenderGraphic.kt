@@ -28,10 +28,16 @@ import javafx.scene.paint.Color
 import javafx.scene.paint.Color.RED
 import javafx.scene.shape.Rectangle
 import javafx.scene.shape.Shape
+import tornadofx.onLeftClick
 import tornadofx.singleAssign
 
 /** Renders defender on main view, and in palette. */
-class DefenderGraphic(val defender: Defender, val size: Double, palette: Boolean = false, tool: Boolean = false) : Group() {
+class DefenderGraphic(
+    val defender: Defender,
+    val size: Double,
+    val isOnPalette: Boolean = false,
+    val isForPreview: Boolean = false
+) : Group() {
 
     var defenderShape by singleAssign<Rectangle>()
     var selectionShape by singleAssign<Shape>()
@@ -55,15 +61,33 @@ class DefenderGraphic(val defender: Defender, val size: Double, palette: Boolean
             selectionShape.isVisible = !value
             selectionShape.fill = RED
         }
+    val isInPlay: Boolean
+        get() = !isOnPalette && !isForPreview
 
     init {
         with (defender) {
             selectionShape = squareByCenter(position, size + 5, Color.YELLOW).apply {
                 isVisible = false
             }
-            children.add(selectionShape)
             defenderShape = squareByCenter(position, size, color)
+
+            children.add(selectionShape)
             children.add(defenderShape)
+            children.add(createText())
+
+            if (isForPreview) {
+                children.add(circle(position, range.toDouble(), fill = null, stroke = color))
+            }
+            if (isInPlay) {
+                onLeftClick {
+                    isSelected = !isSelected
+                }
+            }
+        }
+    }
+
+    private fun createText() = Group().apply {
+        with (defender) {
             children.add(text(position, name.beforeSpace(), size / 2).also {
                 it.alignAbove(defenderShape)
                 it.isMouseTransparent = true
@@ -72,23 +96,13 @@ class DefenderGraphic(val defender: Defender, val size: Double, palette: Boolean
                 it.alignAbove2(defenderShape)
                 it.isMouseTransparent = true
             })
-
-            when {
-                palette -> {
-                    children.add(text(position, "$type \$$cost", size / 2).also {
-                        it.alignBelow(defenderShape)
-                    })
-                    children.add(text(position, "D: $attackPower, R: $range", size / 2).also {
-                        it.alignBelow2(defenderShape)
-                    })
-                }
-                tool -> {
-                    children.add(circle(position, range.toDouble()).apply {
-                        fill = null
-                        stroke = color
-                    })
-                }
-                else -> {}
+            if (isOnPalette) {
+                children.add(text(position, "$type \$$cost", size / 2).also {
+                    it.alignBelow(defenderShape)
+                })
+                children.add(text(position, "D: $attackPower, R: $range", size / 2).also {
+                    it.alignBelow2(defenderShape)
+                })
             }
         }
     }

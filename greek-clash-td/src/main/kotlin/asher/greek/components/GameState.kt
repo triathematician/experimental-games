@@ -26,7 +26,7 @@ import tornadofx.property
 import tornadofx.stringBinding
 
 /** Manages the state of the overall game, including current level, player assets, etc. */
-class Game {
+class GameState {
     val levels = Assets.levelConfig.createLevels()
     val player = PlayerInfo()
 
@@ -45,15 +45,15 @@ class Game {
     val curWave
         get() = curLevel.waves[waveIndex]
 
-    private var _levelIndex = getProperty(Game::levelIndex)
-    private var _waveIndex = getProperty(Game::waveIndex)
+    private val _levelIndex = getProperty(GameState::levelIndex)
+    private val _waveIndex = getProperty(GameState::waveIndex)
 
-    var _waveStarted = getProperty(Game::isWaveStarted)
-    var _wavePaused = getProperty(Game::isWavePaused)
-    var _waveOver = getProperty(Game::isWaveOver)
-    var _passedWave = getProperty(Game::isPassedWave)
+    val _waveStarted = getProperty(GameState::isWaveStarted)
+    val _wavePaused = getProperty(GameState::isWavePaused)
+    val _waveOver = getProperty(GameState::isWaveOver)
+    val _passedWave = getProperty(GameState::isPassedWave)
 
-    var _testMode = getProperty(Game::isTestMode)
+    val _testMode = getProperty(GameState::isTestMode)
 
     val hasPreviousLevel = booleanBinding(_levelIndex) { get() > 0 }
     val hasNextLevel = booleanBinding(_levelIndex) { get() < levels.size - 1 }

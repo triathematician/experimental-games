@@ -30,6 +30,7 @@ import javafx.scene.Group
 import javafx.scene.paint.Color.LIGHTCYAN
 import tornadofx.getProperty
 import tornadofx.onChange
+import tornadofx.onLeftClick
 import tornadofx.property
 
 class DefenderPalette(_bounds: Bounds) : Group() {
@@ -56,7 +57,7 @@ class DefenderPalette(_bounds: Bounds) : Group() {
     }
 
     private fun DefenderGraphic.initToolSelection() {
-        setOnMouseClicked {
+        onLeftClick {
             selectedTool = if (isSelected || !isAvailableToPurchase) null else this
         }
     }

@@ -25,7 +25,6 @@ import asher.greek.util.point
 import asher.greek.util.recenter
 import javafx.beans.value.ObservableValue
 import javafx.scene.Group
-import javafx.scene.paint.Color
 import javafx.scene.paint.Color.BLACK
 import javafx.scene.shape.Shape
 
@@ -39,10 +38,10 @@ class DefenderDraggerTool(
         set(value) {
             field = value
             noSelectionGraphic.recenter(value.x, value.y)
-            defenderGraphic?.let {
+            previewGraphic?.let {
                 it.defender.position = point(value.x, value.y)
-                val newGraphic = DefenderGraphic(it.defender.copy(position = pos), it.size, tool = true)
-                defenderGraphic = newGraphic
+                val newGraphic = DefenderGraphic(it.defender.copy(position = pos), it.size, isForPreview = true)
+                previewGraphic = newGraphic
 
                 // must calculate intersection after setting parent
                 newGraphic.isValid = validPlacement(newGraphic.defenderShape)
@@ -53,7 +52,8 @@ class DefenderDraggerTool(
         fill = null
         stroke = BLACK
     }
-    var defenderGraphic: DefenderGraphic? = null
+    /** Rendered at mouse to show where it will be placed. */
+    var previewGraphic: DefenderGraphic? = null
         set(value) {
             field = value
             children.setAll(value ?: noSelectionGraphic)
@@ -67,6 +67,6 @@ class DefenderDraggerTool(
 
     fun updateTool() {
         val v = selection.value
-        defenderGraphic = v?.let { DefenderGraphic(v.defender.at(pos.x, pos.y), v.size, tool = true) }
+        previewGraphic = v?.let { DefenderGraphic(v.defender.at(pos.x, pos.y), v.size, isForPreview = true) }
     }
 }

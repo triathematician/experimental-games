@@ -1,114 +1,89 @@
 levels:
+
   - name: Chevron
     startingFunds: 300
     path: 0 200 200 250 400 200
     pathWidth: 10
     waves:
-      - attackers:
-          Skeleton Jr: 0 100 200
-      - attackers:
-          Skeleton Jr: 6@0+50
-      - attackers:
-          Skeleton Jr: 12@0+25
-      - attackers:
-          Skeleton: 0 100 200
-      - attackers:
-          Skeleton: 6@0+50
-          Skeleton Jr: 6@0+50
-      - attackers:
-          Skeleton: 12@0+25
-      - attackers:
-          Harpy: 8@0+50
-      - attackers:
-          Skeleton: 10@0+25 10@10+25
-      - attackers:
-          Hell Hound: 6@0+20
-      - attackers:
-          Skeleton: 10@0+5 10@100+5
-          Hell Hound: 6@0+20 6@300+20
-      - attackers:
-          Harpy: 40@10+20
-      - attackers:
-          Harpy: 40@10+20
-          Cerberus: 2@100+300
-      - attackers:
-          Skeleton Jr: 100@0+5
-          Skeleton: 10@0+10 10@150+10
-          Cerberus: 4@0+150
-      - attackers:
-          Skeleton Jr: 100@0+5
-          Skeleton: 10@0+10 10@150+10
-          Hell Hound: 8@80+10 8@180+10 8@280+10
-          Harpy: 40@200+20
-          Cerberus: 4@0+150
+      - Skeleton Jr: 0 100 200
+      - Skeleton Jr: 6@0+50
+      - Skeleton Jr: 12@0+25
+      - Skeleton: 0 100 200
+      - Skeleton: 6@0+50
+        Skeleton Jr: 6@0+50
+      - Skeleton: 12@0+25
+      - Harpy: 8@0+50
+      - Skeleton: 10@0+25 10@10+25
+      - Hell Hound: 6@0+20
+      - Skeleton: 10@0+5 10@100+5
+        Hell Hound: 6@0+20 6@300+20
+      - Harpy: 40@10+20
+      - Harpy: 40@10+20
+        Cerberus: 2@100+300
+      - Skeleton Jr: 100@0+5
+        Skeleton: 10@0+10 10@150+10
+        Cerberus: 4@0+150
+      - Skeleton Jr: 100@0+5
+        Skeleton: 10@0+10 10@150+10
+        Hell Hound: 8@80+10 8@180+10 8@280+10
+        Harpy: 40@200+20
+        Cerberus: 4@0+150
+
   - name: Crooked
     startingFunds: 500
     path: 0 200 100 100 200 300 400 200
     waves:
-      - attackers:
-          Skeleton: 6@100+25
-      - attackers:
-          Skeleton: 12@100+25
-      - attackers:
-          Harpy: 6@200+20
-      - attackers:
-          Skeleton: 10@100+25
-          Harpy: 4@200+20
-      - attackers:
-          Hell Hound: 6@280+10
-      - attackers:
-          Skeleton: 10@100+25
-          Hell Hound: 6@280+10
-      - attackers:
-          Cerberus: 0 100 200
-      - attackers:
-          Skeleton: 10@100+25
-          Harpy: 6@200+20
-      - attackers:
-          Cerberus: 0 100 200
-          Skeleton: 10@100+25
-          Harpy: 6@200+20
-      - attackers:
-          Hell Hound: 6@280+10 6@380+10
-      - attackers:
-          Cerberus: 0 100 200
-          Hell Hound: 6@280+10 6@380+10
-      - attackers:
-          Cerberus: 0 100 200
-          Skeleton: 10@100+25
-          Harpy: 6@200+20
-          Hell Hound: 6@280+10 6@380+10
+      - Skeleton: 6@100+25
+      - Skeleton: 12@100+25
+      - Harpy: 6@200+20
+      - Skeleton: 10@100+25
+        Harpy: 4@200+20
+      - Hell Hound: 6@280+10
+      - Skeleton: 10@100+25
+        Hell Hound: 6@280+10
+      - Cerberus: 0 100 200
+      - Skeleton: 10@100+25
+        Harpy: 6@200+20
+      - Cerberus: 0 100 200
+        Skeleton: 10@100+25
+        Harpy: 6@200+20
+      - Hell Hound: 6@280+10 6@380+10
+      - Cerberus: 0 100 200
+        Hell Hound: 6@280+10 6@380+10
+      - Cerberus: 0 100 200
+        Skeleton: 10@100+25
+        Harpy: 6@200+20
+        Hell Hound: 6@280+10 6@380+10
+
   - name: Island
     startingFunds: 1000
     path: 0 200 200 200 200 100 100 100 100 300 300 300 300 200 400 200
     waves:
-      - attackers:
-          Skeleton: 10@0+25
-      - attackers:
-          Skeleton: 10@0+25
-          Hell Hound: 6@80+10, 6@180+10
+      - Skeleton: 10@0+25
+      - Skeleton: 10@0+25
+        Hell Hound: 6@80+10, 6@180+10
+
   - name: Straight
     startingFunds: 300
     path: 200 0 200 400
     waves:
-      - attackers:
-          Skeleton: 10@0+25
+      - Skeleton: 10@0+25
+
   - name: ZigZag
     startingFunds: 300
     path: 0 250 100 150 200 250 300 150 400 250
     waves:
-      - attackers:
-          Skeleton: 10@0+25
+      - Skeleton: 10@0+25
+
   - name: Resistance
     startingFunds: 300
     path: 0 200 50 200 50 100 100 100 100 300 150 300 150 100 200 100 200 300 250 300 250 100 300 100 300 300 350 300 350 200 400 200
     waves:
-      - attackers:
-          Skeleton: 10@0+25
+      - Skeleton: 10@0+25
+
   - name: Switchback
     startingFunds: 300
     path: 0 100 350 100 350 150 50 150 50 200 350 200 350 250 50 250 50 300 400 300
     waves:
-      - attackers:
-          Skeleton: 10@0+25
+      - Skeleton: 10@0+25
 

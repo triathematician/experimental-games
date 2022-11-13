@@ -42,7 +42,7 @@ object WaveStateTest {
     }
 
     fun testWave() {
-        val g = Game()
+        val g = GameState()
         with(WaveState(g, testLevelWave())) {
             setup(listOf())
             start {}

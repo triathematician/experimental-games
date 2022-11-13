@@ -28,7 +28,7 @@ import kotlin.math.pow
  * All movement is synchronized with integer clock "ticks".
  * All speed parameters reference this unit of time.
  */
-class WaveState(val game: Game, val levelWave: LevelWave) {
+class WaveState(val game: GameState, val levelWave: LevelWave) {
     val attackers = mutableListOf<Attacker>()
     val defenders = mutableListOf<Defender>()
     val bullets = mutableListOf<Bullet>()
@@ -72,7 +72,6 @@ class WaveState(val game: Game, val levelWave: LevelWave) {
         hits = mutableListOf()
         bullets.forEach {
             it.advance()
-            // todo - can hit more than one?
             attackers.forEach { a -> if (it.hit(a)) hits.add(it to a) }
         }
         hits.forEach { it.first.handleHit(it.second) }

@@ -22,10 +22,16 @@ package asher.greek.assets
 import asher.greek.components.AttackOrder
 import asher.greek.components.Level
 import asher.greek.components.LevelWave
+import com.fasterxml.jackson.annotation.JsonAnySetter
 
 class WaveConfig {
     var attackers = mutableMapOf<String, String>()
     var defenders = mutableMapOf<String, List<Array<Int>>>()
+
+    @JsonAnySetter
+    fun putAttacker(name: String, timeList: String) {
+        attackers[name] = timeList
+    }
 
     fun createWave(it: Level, num: Int) = LevelWave(it, num).apply {
         order = createAttackOrder()

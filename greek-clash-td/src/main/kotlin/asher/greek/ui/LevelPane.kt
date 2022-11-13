@@ -31,17 +31,16 @@ import asher.greek.gfx.GraphicsFactory.updateGraphics
 import asher.greek.gfx.LevelBackgroundGraphics
 import asher.greek.gfx.LevelStatsGraphics
 import asher.greek.util.rectangle
+import asher.greek.util.scaleToFit
 import javafx.animation.AnimationTimer
 import javafx.scene.Group
 import javafx.scene.layout.Pane
-import javafx.scene.paint.Color.LIGHTGOLDENRODYELLOW
-import javafx.scene.paint.Color.RED
+import javafx.scene.paint.Color.*
 import javafx.scene.shape.Path
 import javafx.scene.shape.Shape
-import javafx.scene.transform.Transform
 
 /** JavaFX scene for a level. */
-class LevelPane(val game: Game) : Pane() {
+class LevelPane(val game: GameState, val controller: GameController) : Pane() {
 
     val resizableGroup = Group().apply {
         clip = rectangle(VIEW_BOUNDS)
@@ -63,19 +62,14 @@ class LevelPane(val game: Game) : Pane() {
         children += resizableGroup
         with (resizableGroup.children) {
             add(defPalette)
-            add(rectangle(PLAY_AREA_BOUNDS, fillColor = LIGHTGOLDENRODYELLOW, strokeColor = RED))
+            add(rectangle(PLAY_AREA_BOUNDS, fill = LIGHTGOLDENRODYELLOW, stroke = DARKGOLDENROD))
             add(stats)
             add(levelGroup)
             add(toolDragger)
         }
 
         layoutBoundsProperty().addListener { _, _, lb ->
-            val scale = minOf(lb.width / VIEW_BOUNDS.width, lb.height / VIEW_BOUNDS.height)
-            resizableGroup.transforms.setAll(
-                Transform.translate(.5 * lb.width - .5 * scale * VIEW_BOUNDS.width, .5 * lb.height - .5 * scale * VIEW_BOUNDS.height),
-                Transform.scale(scale, scale),
-                Transform.translate(-VIEW_BOUNDS.minX, -VIEW_BOUNDS.minY)
-            )
+            resizableGroup.scaleToFit(source = VIEW_BOUNDS, target = lb)
         }
 
         initWave(keepDefenders = false)
@@ -123,39 +117,46 @@ class LevelPane(val game: Game) : Pane() {
         defPalette.update(game.player)
     }
 
+    //region MAIN GAME TIMER
+
     /** Starts the wave. */
     fun startWaveTimer() {
         timer = object : AnimationTimer() {
             override fun handle(now: Long) {
-                // advance simulation
-                waveState.tick()
-
-                // update attackers
-                (waveState.attackers - attackers.keys).forEach { createAttackerGraphics(it) }
-                (attackers.keys - waveState.attackers).forEach { removeAttackerGraphics(it) }
-                attackers.forEach { (a, s) -> a.updateGraphics(s) }
-
-                // update defenders
-                (waveState.bullets - bullets.keys).forEach { createBulletGraphics(it) }
-                (bullets.keys - waveState.bullets).forEach { removeBulletGraphics(it) }
-                bullets.forEach { (b, s) -> b.updateGraphics(s) }
-
-                // animate hits
-                waveState.hits.mapNotNull { attackers[it.second] }.forEach { it.hitAnimation() }
-
-                // update stats
-                stats.update(waveState, game.player)
-                defPalette.update(game.player)
-
-                if (waveState.waveOver) {
-                    stopWaveTimer()
-                    game.isPassedWave = !waveState.playerLost
-                    game.isWaveOver = true
-                }
+                gameTick()
             }
         }.also {
             it.start()
             game.isWaveStarted = true
+        }
+    }
+
+    /** Runs one tick of the game. */
+    private fun gameTick() {
+        // advance simulation
+        waveState.tick()
+
+        // update attackers
+        (waveState.attackers - attackers.keys).forEach { createAttackerGraphics(it) }
+        (attackers.keys - waveState.attackers).forEach { removeAttackerGraphics(it) }
+        attackers.forEach { (a, s) -> a.updateGraphics(s) }
+
+        // update defenders
+        (waveState.bullets - bullets.keys).forEach { createBulletGraphics(it) }
+        (bullets.keys - waveState.bullets).forEach { removeBulletGraphics(it) }
+        bullets.forEach { (b, s) -> b.updateGraphics(s) }
+
+        // animate hits
+        waveState.hits.mapNotNull { attackers[it.second] }.forEach { it.hitAnimation() }
+
+        // update stats
+        stats.update(waveState, game.player)
+        defPalette.update(game.player)
+
+        if (waveState.waveOver) {
+            stopWaveTimer()
+            game.isPassedWave = !waveState.playerLost
+            game.isWaveOver = true
         }
     }
 
@@ -177,12 +178,14 @@ class LevelPane(val game: Game) : Pane() {
         timer = null
     }
 
+    //endregion
+
     //region GRAPHIC CREATORS/DESTRUCTORS
 
     fun maybeAddDefender(waveState: WaveState, x: Double, y: Double) {
-        if (toolDragger.defenderGraphic?.isValid != true)
+        if (toolDragger.previewGraphic?.isValid != true)
             return
-        toolDragger.defenderGraphic?.let { dg ->
+        toolDragger.previewGraphic?.let { dg ->
             val newDef = dg.defender.at(x, y)
             game.player.funds -= newDef.cost
             waveState.defenders.add(newDef)

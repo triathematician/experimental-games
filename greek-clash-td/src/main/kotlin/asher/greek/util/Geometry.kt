@@ -13,6 +13,7 @@ import javafx.scene.shape.Rectangle
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
+import javafx.scene.transform.Transform
 import tornadofx.*
 import java.awt.BasicStroke
 import java.awt.geom.Path2D
@@ -23,6 +24,16 @@ typealias Point2 = Point2D.Double
 typealias Polyline = List<Point2>
 
 //region CONVERSIONS
+
+/** Update a [Node]'s transforms to fit source within target. */
+fun Node.scaleToFit(source: Bounds, target: Bounds) {
+    val scale = minOf(target.width / source.width, target.height / source.height)
+    transforms.setAll(
+        Transform.translate(.5 * target.width - .5 * scale * source.width, .5 * target.height - .5 * scale * source.height),
+        Transform.scale(scale, scale),
+        Transform.translate(-source.minX, -source.minY)
+    )
+}
 
 fun Polyline.toAwtPath() = Path2D.Double().apply {
     forEach {
@@ -71,19 +82,22 @@ fun point(x: Number, y: Number) = Point2(x.toDouble(), y.toDouble())
 
 fun bounds(x: Number, y: Number, width: Number, height: Number) =
     BoundingBox(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble())
-fun rectangle(b: Bounds, fillColor: Color? = null, strokeColor: Color? = null) =
+fun rectangle(b: Bounds, fill: Color? = Color.BLACK, stroke: Color? = null) =
     Rectangle(b.minX, b.minY, b.width, b.height).apply {
-        fillColor?.let { fill = it }
-        strokeColor?.let { stroke = it }
+        this.fill = fill
+        this.stroke = stroke
     }
-fun rectangle(x: Number, y: Number, width: Number, height: Number, fillColor: Color? = null, strokeColor: Color? = null) =
+fun rectangle(x: Number, y: Number, width: Number, height: Number, fill: Color? = Color.BLACK, stroke: Color? = null) =
     Rectangle(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble()).apply {
-        fillColor?.let { fill = it }
-        strokeColor?.let { stroke = it }
+        this.fill = fill
+        this.stroke = stroke
     }
-fun circle(center: Point2, radius: Double, fillColor: Color? = null) = Circle(center.x, center.y, radius).apply {
-    fillColor?.let { fill = it }
-}
+
+fun circle(center: Point2, radius: Double, fill: Color? = Color.BLACK, stroke: Color? = null) =
+    Circle(center.x, center.y, radius).apply {
+        this.fill = fill
+        this.stroke = stroke
+    }
 fun squareByCenter(center: Point2, halfWidth: Double, fillColor: Color? = null) = Rectangle(center.x - halfWidth, center.y - halfWidth, 2*halfWidth, 2*halfWidth).apply {
     fillColor?.let { fill = it }
 }
