@@ -20,6 +20,7 @@
 package asher.greek.ui
 
 import asher.greek.components.*
+import asher.greek.gfx.DefenderGraphic
 import asher.greek.gfx.GraphicsFactory.LEVEL_BOUNDS
 import asher.greek.gfx.GraphicsFactory.PALETTE_BOUNDS
 import asher.greek.gfx.GraphicsFactory.PLAY_AREA_BOUNDS
@@ -35,6 +36,7 @@ import javafx.scene.Group
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color.LIGHTGOLDENRODYELLOW
 import javafx.scene.paint.Color.RED
+import javafx.scene.shape.Path
 import javafx.scene.shape.Shape
 import javafx.scene.transform.Transform
 
@@ -46,9 +48,12 @@ class LevelPane(val game: Game) : Pane() {
     }
     val levelGroup = Group()
     val defPalette = DefenderPalette(PALETTE_BOUNDS)
-    val toolDragger = DefenderDraggerTool(defPalette._selectedTool)
+    val toolDragger = DefenderDraggerTool(defPalette._selectedTool, this::spaceAvailable)
     val stats = LevelStatsGraphics(LEVEL_BOUNDS)
+    lateinit var bgGraphics: LevelBackgroundGraphics
+    lateinit var pathGraphics: Shape
     val attackers = mutableMapOf<Attacker, Group>()
+    val defenders = mutableMapOf<Defender, DefenderGraphic>()
     val bullets = mutableMapOf<Bullet, Shape>()
 
     var waveState = WaveState(game, game.curWave)
@@ -76,6 +81,18 @@ class LevelPane(val game: Game) : Pane() {
         initWave(keepDefenders = false)
     }
 
+    /** Shapes comprising occupied area. */
+    fun spaceAvailable(shape: Shape): Boolean {
+        if (!bgGraphics.boundsInParent.contains(shape.boundsInParent)) {
+            return false
+        }
+        // tried to compute a union of areas and use that result, but jfx incorporates scene transforms into the result
+        // making it more difficult to compare
+        return !(listOf(pathGraphics) + defenders.values.map { it.defenderShape }).any {
+            (Shape.intersect(it, shape) as Path).elements.isNotEmpty()
+        }
+    }
+
     /** Initializes the wave. */
     fun initWave(keepDefenders: Boolean) {
         pauseWaveTimer()
@@ -85,20 +102,22 @@ class LevelPane(val game: Game) : Pane() {
         waveState = WaveState(game, game.curWave).also {
             it.setup(defs)
         }
+        game.isWaveStarted = false
+        game.isWavePaused = false
         game.isPassedWave = false
-        game.isLevelStarted = false
-        game.isLevelPaused = false
+        game.isWaveOver = false
 
         // reset graphics
         levelGroup.children.clear()
 
         // set up graphics
-        val bg = LevelBackgroundGraphics(game.curLevel, toolDragger).apply {
+        bgGraphics = LevelBackgroundGraphics(game.curLevel, toolDragger).apply {
             setOnMouseClicked { maybeAddDefender(waveState, it.x, it.y) }
         }
-        levelGroup.children.add(bg)
-        levelGroup.children.add(game.curLevel.path.createGraphics())
-        waveState.defenders.forEach { levelGroup.children.add(it.createGraphics()) }
+        pathGraphics = game.curLevel.path.createGraphics()
+        levelGroup.children.add(bgGraphics)
+        levelGroup.children.add(pathGraphics)
+        waveState.defenders.forEach { createDefenderGraphics(it) }
 
         stats.update(waveState, game.player)
         defPalette.update(game.player)
@@ -129,41 +148,54 @@ class LevelPane(val game: Game) : Pane() {
                 defPalette.update(game.player)
 
                 if (waveState.waveOver) {
-                    pauseWaveTimer()
+                    stopWaveTimer()
                     game.isPassedWave = !waveState.playerLost
-                    game.isLevelStarted = false
+                    game.isWaveOver = true
                 }
             }
         }.also {
             it.start()
-            game.isLevelStarted = true
+            game.isWaveStarted = true
         }
     }
 
-    /** Stops the animation. */
+    /** Pauses the animation. */
     fun pauseWaveTimer() {
         timer?.stop()
-        game.isLevelPaused = true
+        game.isWavePaused = true
     }
 
     /** Starts the animation. */
     fun unpauseWaveTimer() {
         timer?.start()
-        game.isLevelPaused = false
+        game.isWavePaused = false
+    }
+
+    /** Stops the animation. */
+    fun stopWaveTimer() {
+        timer?.stop()
+        timer = null
     }
 
     //region GRAPHIC CREATORS/DESTRUCTORS
 
     fun maybeAddDefender(waveState: WaveState, x: Double, y: Double) {
-        toolDragger.defGfx?.let { dg ->
+        if (toolDragger.defenderGraphic?.isValid != true)
+            return
+        toolDragger.defenderGraphic?.let { dg ->
             val newDef = dg.defender.at(x, y)
             game.player.funds -= newDef.cost
             waveState.defenders.add(newDef)
-            levelGroup.children.add(newDef.createGraphics())
+            createDefenderGraphics(newDef)
 
             stats.update(waveState, game.player)
             defPalette.update(game.player)
         }
+    }
+
+    fun createDefenderGraphics(d: Defender) = d.createGraphics().also {
+        defenders[d] = it
+        levelGroup.children.add(it)
     }
 
     fun createAttackerGraphics(a: Attacker) = a.createGraphics().also {
@@ -174,6 +206,10 @@ class LevelPane(val game: Game) : Pane() {
     fun createBulletGraphics(b: Bullet) = b.createGraphics().also {
         bullets[b] = it
         levelGroup.children.add(it)
+    }
+
+    fun removeDefenderGraphics(d: Defender) {
+        levelGroup.children.remove(defenders[d])
     }
 
     fun removeAttackerGraphics(a: Attacker) {

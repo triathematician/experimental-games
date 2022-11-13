@@ -32,9 +32,12 @@ class Game {
 
     private var levelIndex by property(0)
     private var waveIndex by property(0)
+
+    var isWaveStarted by property(false)
+    var isWavePaused by property(false)
+    var isWaveOver by property(false)
     var isPassedWave by property(false)
-    var isLevelStarted by property(false)
-    var isLevelPaused by property(false)
+
     var isTestMode by property(false)
 
     val curLevel
@@ -44,10 +47,12 @@ class Game {
 
     private var _levelIndex = getProperty(Game::levelIndex)
     private var _waveIndex = getProperty(Game::waveIndex)
-    private var _passedWave = getProperty(Game::isPassedWave)
 
-    var _levelStarted = getProperty(Game::isLevelStarted)
-    var _levelPaused = getProperty(Game::isLevelPaused)
+    var _waveStarted = getProperty(Game::isWaveStarted)
+    var _wavePaused = getProperty(Game::isWavePaused)
+    var _waveOver = getProperty(Game::isWaveOver)
+    var _passedWave = getProperty(Game::isPassedWave)
+
     var _testMode = getProperty(Game::isTestMode)
 
     val hasPreviousLevel = booleanBinding(_levelIndex) { get() > 0 }
@@ -73,7 +78,7 @@ class Game {
         "Level ${levelIndex + 1}-${curLevel.name}, Wave ${get() + 1}"
     }
 
-    val levelActive = booleanBinding(_levelStarted, _levelPaused) { get() && !isLevelPaused }
+    val levelActive = booleanBinding(_waveStarted, _wavePaused, _waveOver) { get() && !isWavePaused && !isWaveOver }
 
     init {
         initLevel()

@@ -25,24 +25,35 @@ import asher.greek.util.squareByCenter
 import asher.greek.util.text
 import javafx.scene.Group
 import javafx.scene.paint.Color
+import javafx.scene.paint.Color.RED
+import javafx.scene.shape.Rectangle
 import javafx.scene.shape.Shape
 import tornadofx.singleAssign
 
 /** Renders defender on main view, and in palette. */
 class DefenderGraphic(val defender: Defender, val size: Double, palette: Boolean = false, tool: Boolean = false) : Group() {
+
+    var defenderShape by singleAssign<Rectangle>()
     var selectionShape by singleAssign<Shape>()
-    var selected: Boolean
+
+    var isSelected: Boolean
         get() = selectionShape.isVisible
         set(value) {
-            if (value) assert(available)
+            if (value) assert(isAvailableToPurchase)
             selectionShape.isVisible = value
         }
-    var available: Boolean = false
+    var isAvailableToPurchase: Boolean = false
         set(value) {
             field = value
             opacity = if (value) 1.0 else 0.3
             if (!value)
-                selected = false
+                isSelected = false
+        }
+    var isValid: Boolean = false
+        set(value) {
+            field = value
+            selectionShape.isVisible = !value
+            selectionShape.fill = RED
         }
 
     init {
@@ -51,28 +62,29 @@ class DefenderGraphic(val defender: Defender, val size: Double, palette: Boolean
                 isVisible = false
             }
             children.add(selectionShape)
-            val shape = squareByCenter(position, size, color)
-            children.add(shape)
+            defenderShape = squareByCenter(position, size, color)
+            children.add(defenderShape)
             children.add(text(position, name.beforeSpace(), size / 2).also {
-                it.alignAbove(shape)
+                it.alignAbove(defenderShape)
                 it.isMouseTransparent = true
             })
             children.add(text(position, name.afterSpace(), size / 2).also {
-                it.alignAbove2(shape)
+                it.alignAbove2(defenderShape)
                 it.isMouseTransparent = true
             })
 
             when {
                 palette -> {
                     children.add(text(position, "$type \$$cost", size / 2).also {
-                        it.alignBelow(shape)
+                        it.alignBelow(defenderShape)
                     })
                     children.add(text(position, "D: $attackPower, R: $range", size / 2).also {
-                        it.alignBelow2(shape)
+                        it.alignBelow2(defenderShape)
                     })
                 }
                 tool -> {
-                    children.add(circle(position, range.toDouble(), null).apply {
+                    children.add(circle(position, range.toDouble()).apply {
+                        fill = null
                         stroke = color
                     })
                 }

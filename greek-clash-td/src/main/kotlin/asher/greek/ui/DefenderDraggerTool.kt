@@ -26,36 +26,41 @@ import asher.greek.util.squareByCenter
 import javafx.beans.value.ObservableValue
 import javafx.scene.Group
 import javafx.scene.paint.Color
+import javafx.scene.shape.Path
+import javafx.scene.shape.Shape
 
 /** Renders defender being placed on top of canvas. */
-class DefenderDraggerTool(val selection: ObservableValue<DefenderGraphic?>): Group() {
+class DefenderDraggerTool(val selection: ObservableValue<DefenderGraphic?>, val validPlacement: (Shape) -> Boolean): Group() {
 
     var pos = point(100, 100)
         set(value) {
             field = value
-            pointGfx.recenter(value.x, value.y)
-            defGfx?.let {
+            noSelectionGraphic.recenter(value.x, value.y)
+            defenderGraphic?.let {
                 it.defender.position = point(value.x, value.y)
-                this@DefenderDraggerTool.children.setAll(
-                    DefenderGraphic(it.defender.copy(position = pos), it.size, tool = true)
-                )
+                val newGraphic = DefenderGraphic(it.defender.copy(position = pos), it.size, tool = true)
+                defenderGraphic = newGraphic
+
+                // must calculate intersection after setting parent
+                newGraphic.isValid = validPlacement(newGraphic.defenderShape)
             }
         }
-    val pointGfx = squareByCenter(pos, 5.0, Color.BLACK)
-    var defGfx: DefenderGraphic? = null
+
+    val noSelectionGraphic = squareByCenter(pos, 5.0, Color.BLACK)
+    var defenderGraphic: DefenderGraphic? = null
         set(value) {
             field = value
-            children.setAll(value ?: pointGfx)
+            children.setAll(value ?: noSelectionGraphic)
         }
 
     init {
         isMouseTransparent = true
-        children.add(pointGfx)
+        children.add(noSelectionGraphic)
         selection.addListener { _, _, _ -> updateTool() }
     }
 
     fun updateTool() {
         val v = selection.value
-        defGfx = v?.let { DefenderGraphic(v.defender.at(pos.x, pos.y), v.size, tool = true) }
+        defenderGraphic = v?.let { DefenderGraphic(v.defender.at(pos.x, pos.y), v.size, tool = true) }
     }
 }

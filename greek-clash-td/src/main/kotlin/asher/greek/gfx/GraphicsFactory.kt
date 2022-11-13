@@ -21,16 +21,18 @@ package asher.greek.gfx
 
 import asher.greek.components.*
 import asher.greek.util.*
+import com.sun.javafx.geom.Area
+import com.sun.javafx.tk.Toolkit
 import javafx.animation.FadeTransition
 import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.paint.Color.*
-import javafx.scene.shape.Circle
-import javafx.scene.shape.Line
-import javafx.scene.shape.Shape
+import javafx.scene.shape.*
 import javafx.scene.text.Text
 import javafx.util.Duration
 import tornadofx.doubleBinding
+import java.awt.BasicStroke
+import java.awt.geom.Rectangle2D
 
 /** Creates visual elements for display. */
 object GraphicsFactory {
@@ -46,9 +48,15 @@ object GraphicsFactory {
 
     //region FACTORIES
 
-    fun AttackPath.createGraphics() = path.toJavaFxPolyline().apply {
-        stroke = PATH_COLOR
-        strokeWidth = 5.0
+    fun AttackPath.createGraphics(): Shape {
+        val path = path.toAwtPath().createAwtOutline(pathWidth)
+        val background = Rectangle2D.Double(LEVEL_BOUNDS.minX, LEVEL_BOUNDS.minY, LEVEL_BOUNDS.width, LEVEL_BOUNDS.height)
+        val clippedPath = java.awt.geom.Area(path).also { it.intersect(java.awt.geom.Area(background)) }
+        return clippedPath.toJfxPath().apply {
+            fill = PATH_COLOR
+            stroke = null
+            isMouseTransparent = true
+        }
     }
 
     fun Defender.createGraphics(size: Double = 15.0) = DefenderGraphic(this, size, palette = false)

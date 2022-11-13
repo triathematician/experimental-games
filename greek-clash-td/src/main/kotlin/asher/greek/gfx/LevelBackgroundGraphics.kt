@@ -32,6 +32,6 @@ class LevelBackgroundGraphics(level: Level, toolDragger: DefenderDraggerTool): G
 
         setOnMouseMoved { toolDragger.pos = point(it.x, it.y) }
         setOnMouseEntered { toolDragger.updateTool() }
-        setOnMouseExited { toolDragger.defGfx = null }
+        setOnMouseExited { toolDragger.defenderGraphic = null }
     }
 }

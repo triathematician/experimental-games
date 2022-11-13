@@ -25,7 +25,7 @@ import asher.greek.util.length
 import asher.greek.util.pointAt
 
 /** Path that attackers follow. */
-class AttackPath(var path: Polyline = listOf()) {
+class AttackPath(var path: Polyline = listOf(), var pathWidth: Double = 5.0) {
 
     constructor(vararg pathPoint: Point2) : this(listOf(*pathPoint))
 

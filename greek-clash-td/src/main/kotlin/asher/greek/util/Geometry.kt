@@ -7,11 +7,16 @@ import javafx.geometry.Bounds
 import javafx.scene.Node
 import javafx.scene.paint.Color
 import javafx.scene.shape.Circle
+import javafx.scene.shape.FillRule
+import javafx.scene.shape.Path
 import javafx.scene.shape.Rectangle
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
-import tornadofx.text
+import tornadofx.*
+import java.awt.BasicStroke
+import java.awt.geom.Path2D
+import java.awt.geom.PathIterator
 import java.awt.geom.Point2D
 
 typealias Point2 = Point2D.Double
@@ -19,7 +24,44 @@ typealias Polyline = List<Point2>
 
 //region CONVERSIONS
 
-fun Polyline.toJavaFxPolyline() = javafx.scene.shape.Polyline(*flatMap { listOf(it.x, it.y) }.toDoubleArray())
+fun Polyline.toAwtPath() = Path2D.Double().apply {
+    forEach {
+        if (it == first())
+            moveTo(it.x, it.y)
+        else
+            lineTo(it.x, it.y)
+    }
+}
+fun Polyline.toJfxPolyline() = javafx.scene.shape.Polyline(*flatMap { listOf(it.x, it.y) }.toDoubleArray())
+
+/** Generates outline of the shape, as an AWT shape. */
+fun java.awt.Shape.createAwtOutline(width: Number) =
+    BasicStroke(width.toFloat()).createStrokedShape(this)
+
+/** Generates outline of the shape, as a JFX shape. */
+fun java.awt.Shape.createJfxOutline(width: Number) =
+    createAwtOutline(width).toJfxPath()
+
+/** Converts AWT Shape to JFX Path */
+fun java.awt.Shape.toJfxPath() = Path().apply {
+    val pi = getPathIterator(null)
+    fillRule = when (pi.windingRule) {
+        PathIterator.WIND_EVEN_ODD -> FillRule.EVEN_ODD
+        PathIterator.WIND_NON_ZERO -> FillRule.NON_ZERO
+        else -> throw IllegalStateException()
+    }
+    val coords = FloatArray(6) { 0f }
+    while (!pi.isDone) {
+        when (pi.currentSegment(coords)) {
+            PathIterator.SEG_MOVETO -> moveTo(coords[0], coords[1])
+            PathIterator.SEG_LINETO -> lineTo(coords[0], coords[1])
+            PathIterator.SEG_QUADTO -> quadcurveTo(coords[0], coords[1], coords[2], coords[3])
+            PathIterator.SEG_CUBICTO -> cubiccurveTo(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5])
+            PathIterator.SEG_CLOSE -> closepath()
+        }
+        pi.next()
+    }
+}
 
 //endregion
 

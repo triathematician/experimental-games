@@ -30,7 +30,7 @@ class GameView(val game: Game = Game()) : View() {
     override val root = borderpane {
         top = toolbar {
             button("Start Wave") {
-                disableWhen { game._levelStarted }
+                disableWhen { game._waveStarted }
                 action { levelGraphics.startWaveTimer() }
             }
             button("Pause Wave") {
@@ -38,16 +38,19 @@ class GameView(val game: Game = Game()) : View() {
                 action { levelGraphics.pauseWaveTimer() }
             }
             button("Continue Wave") {
-                enableWhen { game._levelPaused }
+                enableWhen { game._wavePaused }
                 action { levelGraphics.unpauseWaveTimer() }
             }
             button("Reset Wave") {
+                visibleWhen { game._testMode }
+                managedWhen { game._testMode }
                 disableWhen { game.levelActive }
                 action { levelGraphics.initWave(keepDefenders = true) }
             }
             separator {  }
             button("Previous Wave") {
                 visibleWhen { game._testMode }
+                managedWhen { game._testMode }
                 enableWhen { game.canProceedToPreviousWave }
                 action { previousWave() }
             }
@@ -57,6 +60,7 @@ class GameView(val game: Game = Game()) : View() {
             }
             button("Previous Level") {
                 visibleWhen { game._testMode }
+                managedWhen { game._testMode }
                 enableWhen { game.canProceedToPreviousLevel }
                 action { previousLevel() }
             }
@@ -64,7 +68,7 @@ class GameView(val game: Game = Game()) : View() {
                 enableWhen { game.canProceedToNextLevel }
                 action { nextLevel() }
             }
-            button("Reset Level") {
+            button("Restart Level") {
                 action { resetLevel() }
             }
             separator { }

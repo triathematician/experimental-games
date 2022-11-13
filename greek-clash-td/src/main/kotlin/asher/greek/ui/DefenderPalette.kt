@@ -29,7 +29,6 @@ import javafx.geometry.Bounds
 import javafx.scene.Group
 import javafx.scene.paint.Color.LIGHTCYAN
 import tornadofx.getProperty
-import tornadofx.observable
 import tornadofx.onChange
 import tornadofx.property
 
@@ -47,7 +46,7 @@ class DefenderPalette(_bounds: Bounds) : Group() {
     var selectedTool by property<DefenderGraphic?>(null)
     var _selectedTool = getProperty(DefenderPalette::selectedTool).apply {
         onChange {
-            allTools.forEach { it.selected = it == value && it.available }
+            allTools.forEach { it.isSelected = it == value && it.isAvailableToPurchase }
         }
     }
 
@@ -58,13 +57,13 @@ class DefenderPalette(_bounds: Bounds) : Group() {
 
     private fun DefenderGraphic.initToolSelection() {
         setOnMouseClicked {
-            selectedTool = if (selected || !available) null else this
+            selectedTool = if (isSelected || !isAvailableToPurchase) null else this
         }
     }
 
     fun update(player: PlayerInfo) {
         children.mapNotNull { it as? DefenderGraphic }.forEach {
-            it.available = it.defender.cost <= player.funds
+            it.isAvailableToPurchase = it.defender.cost <= player.funds
         }
         selectedTool?.let {
             if (it.defender.cost > player.funds)

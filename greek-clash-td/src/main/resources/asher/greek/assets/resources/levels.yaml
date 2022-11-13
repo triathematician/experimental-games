@@ -2,6 +2,7 @@ levels:
   - name: Alpha
     startingFunds: 300
     path: [ [0, 200], [200, 250], [400, 200] ]
+    pathWidth: 10
     waves:
       - attackers:
           Skeleton Jr: 0 100 200
