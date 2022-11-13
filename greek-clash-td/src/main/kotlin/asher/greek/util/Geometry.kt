@@ -91,6 +91,10 @@ fun Rectangle.recenter(x: Number, y: Number) {
     this.x = x.toDouble() - .5 * width
     this.y = y.toDouble() - .5 * height
 }
+fun Circle.recenter(x: Number, y: Number) {
+    this.centerX = x.toDouble()
+    this.centerY = y.toDouble()
+}
 fun text(loc: Point2, text: String, fontSize: Double? = null, fillColor: Color? = null) = Text(loc.x, loc.y, text).apply {
     fillColor?.let { fill = it }
     fontSize?.let { font = Font.font(it) }

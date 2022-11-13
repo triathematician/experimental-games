@@ -34,8 +34,8 @@ import tornadofx.property
 
 class DefenderPalette(_bounds: Bounds) : Group() {
 
-    val SPACER = 15.0
-    val SPACER2 = SPACER + 15.0
+    val SPACER = 14.0
+    val SPACER2 = SPACER + 13.0
 
     var allTools: List<DefenderGraphic> = Assets.defenderTypes.values.mapIndexed { i, defender ->
         val pos = Point2(_bounds.minX + SPACER2 + 2 * SPACER2 * i, _bounds.centerY)

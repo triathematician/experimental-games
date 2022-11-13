@@ -69,7 +69,7 @@ class GameView(val game: Game = Game()) : View() {
                 action { nextLevel() }
             }
             button("Restart Level") {
-                action { resetLevel() }
+                action { restartLevel() }
             }
             separator { }
             text(game.waveText)
@@ -102,7 +102,7 @@ class GameView(val game: Game = Game()) : View() {
         game.nextLevel()
         levelGraphics.initWave(keepDefenders = false)
     }
-    fun resetLevel() {
+    fun restartLevel() {
         levelGraphics.pauseWaveTimer()
         game.initLevel()
         levelGraphics.initWave(keepDefenders = false)

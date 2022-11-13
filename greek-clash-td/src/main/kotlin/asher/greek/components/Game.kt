@@ -111,6 +111,7 @@ class Game {
     }
 
     internal fun initLevel() {
+        waveIndex = 0
         player.funds = curLevel.startingFunds
         player.lives = curLevel.startingLives
     }

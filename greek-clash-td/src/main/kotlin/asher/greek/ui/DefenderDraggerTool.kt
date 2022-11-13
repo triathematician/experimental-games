@@ -20,17 +20,20 @@
 package asher.greek.ui
 
 import asher.greek.gfx.DefenderGraphic
+import asher.greek.util.circle
 import asher.greek.util.point
 import asher.greek.util.recenter
-import asher.greek.util.squareByCenter
 import javafx.beans.value.ObservableValue
 import javafx.scene.Group
 import javafx.scene.paint.Color
-import javafx.scene.shape.Path
+import javafx.scene.paint.Color.BLACK
 import javafx.scene.shape.Shape
 
 /** Renders defender being placed on top of canvas. */
-class DefenderDraggerTool(val selection: ObservableValue<DefenderGraphic?>, val validPlacement: (Shape) -> Boolean): Group() {
+class DefenderDraggerTool(
+    val selection: ObservableValue<DefenderGraphic?>,
+    val validPlacement: (Shape) -> Boolean
+) : Group() {
 
     var pos = point(100, 100)
         set(value) {
@@ -46,7 +49,10 @@ class DefenderDraggerTool(val selection: ObservableValue<DefenderGraphic?>, val 
             }
         }
 
-    val noSelectionGraphic = squareByCenter(pos, 5.0, Color.BLACK)
+    val noSelectionGraphic = circle(pos, 2.0).apply {
+        fill = null
+        stroke = BLACK
+    }
     var defenderGraphic: DefenderGraphic? = null
         set(value) {
             field = value

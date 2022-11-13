@@ -30,7 +30,7 @@ import java.util.*
  */
 data class Defender(
         val name: String,
-        val type: String,
+        val type: String? = null,
         val fireRate: Int,
         val range: Int,
         val attackPower: Int,
@@ -38,12 +38,18 @@ data class Defender(
         val slowPower: Double? = null,
         val areaAttack: Boolean = false,
         val cost: Int,
-        val color: Color,
+        val color: Color? = null,
         val uid: UUID = UUID.randomUUID(),
-        var position: Point2 = Point2()) {
+        var position: Point2 = Point2(),
+        var upgrades: List<Defender> = listOf()) {
 
     var speedMultiplier = 1.0
     var timeSinceLastFire = 0
 
     fun at(x: Number, y: Number) = copy(position = point(x, y), uid = UUID.randomUUID())
+
+    fun upgrade(): Defender? {
+        if (upgrades.isEmpty()) return null
+        return upgrades.first().copy(type = type, color = color, upgrades = upgrades.drop(1))
+    }
 }

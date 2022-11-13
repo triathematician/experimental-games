@@ -21,10 +21,11 @@ package asher.greek.assets
 
 import asher.greek.components.AttackPath
 import asher.greek.components.Level
+import asher.greek.util.Point2
 
 class LevelConfig {
     var name = ""
-    var path = listOf<Array<Int>>()
+    var path = ""
     var pathWidth = 5.0
     var startingFunds = 0
     var startingLives = 20
@@ -32,7 +33,9 @@ class LevelConfig {
 
     fun createLevel() = Level().also {
         it.name = name
-        it.path = AttackPath(path.map { it.toPoint2() }, pathWidth)
+        it.path = path.split(Regex("\\s+")).map { it.toDouble() }.let {
+            AttackPath(it.chunked(2).map { Point2(it[0], it[1]) }, pathWidth)
+        }
         it.startingFunds = startingFunds
         it.startingLives = startingLives
         it.waves = waves.mapIndexed { i, w -> w.createWave(it, i + 1) }

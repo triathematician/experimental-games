@@ -31,7 +31,13 @@ class LevelBackgroundGraphics(level: Level, toolDragger: DefenderDraggerTool): G
         children.add(rectangle(level.bounds, GraphicsFactory.LEVEL_COLOR))
 
         setOnMouseMoved { toolDragger.pos = point(it.x, it.y) }
-        setOnMouseEntered { toolDragger.updateTool() }
-        setOnMouseExited { toolDragger.defenderGraphic = null }
+        setOnMouseEntered {
+            toolDragger.isVisible = true
+            toolDragger.updateTool()
+        }
+        setOnMouseExited {
+            toolDragger.isVisible = false
+            toolDragger.defenderGraphic = null
+        }
     }
 }

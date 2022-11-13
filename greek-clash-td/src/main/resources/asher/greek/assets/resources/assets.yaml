@@ -12,9 +12,15 @@ attackers:
     hitPoints: 75
     color: SLATEGRAY
 
+  - name: Soul
+    type: Flying
+    speed: 1
+    hitPoints: 30
+    color: DARKGREEN
+
   - name: Harpy
     type: Flying
-    speed: 1.4
+    speed: 1.5
     hitPoints: 100
     color: DARKORANGE
 
@@ -30,6 +36,12 @@ attackers:
     hitPoints: 5000
     color: DARKRED
 
+  - name: Hades
+    type: Boss
+    speed: 0.3
+    hitPoints: 10000
+    color: LIGHTGREEN
+
 defenders:
 
   - name: Skeleton with Stick
@@ -39,11 +51,28 @@ defenders:
     attackPower: 10
     cost: 50
     color: GRAY
+    upgrades:
+      - name: Skeleton with Stick II
+        fireRate: 45
+        range: 55
+        attackPower: 15
+        cost: 50
+      - name: Skeleton with Stick III
+        fireRate: 40
+        range: 60
+        attackPower: 20
+        cost: 50
+      - name: Skeleton with Stick IV
+        fireRate: 35
+        range: 75
+        attackPower: 25
+        cost: 50
 
   - name: Skeleton with Bow & Arrow
     type: Ranged
     fireRate: 50
-    range: 75
+    bulletSpeed: 5
+    range: 90
     attackPower: 30
     cost: 200
     color: SANDYBROWN
@@ -90,9 +119,19 @@ defenders:
     cost: 800
     color: GREENYELLOW
 
+  - name: Ferryman
+    type: Ranged
+    fireRate: 2
+    bulletSpeed: 15
+    range: 250
+    attackPower: 10
+    cost: 1000
+    color: SADDLEBROWN
+
   - name: Demigod
     type: Ranged
     fireRate: 100
+    bulletSpeed: 12
     range: 100
     attackPower: 1000
     cost: 2000

@@ -1,48 +1,49 @@
 levels:
-  - name: Alpha
+  - name: Chevron
     startingFunds: 300
-    path: [ [0, 200], [200, 250], [400, 200] ]
+    path: 0 200 200 250 400 200
     pathWidth: 10
     waves:
       - attackers:
           Skeleton Jr: 0 100 200
-#        defenders:
-          #Skeleton with Stick: [ [150, 210], [250, 210] ]
       - attackers:
-          Skeleton Jr: 0 100 200
-#        defenders:
-          #Skeleton with Bow & Arrow: [ [200, 200] ]
+          Skeleton Jr: 6@0+50
+      - attackers:
+          Skeleton Jr: 12@0+25
       - attackers:
           Skeleton: 0 100 200
-#        defenders:
-          #Skeleton with Gun: [ [200, 200] ]
       - attackers:
-          Skeleton: 5@0+50
-#        defenders:
-          #Skeleton with Gun: [ [200, 200] ]
+          Skeleton: 6@0+50
+          Skeleton Jr: 6@0+50
       - attackers:
-          Skeleton: 10@0+25
-#        defenders:
-          #Skeleton with Machine Gun: [ [200, 200] ]
+          Skeleton: 12@0+25
+      - attackers:
+          Harpy: 8@0+50
       - attackers:
           Skeleton: 10@0+25 10@10+25
-          Hell Hound: 6@80+10 6@180+10
-#        defenders:
-          #Skeleton with Machine Gun: [ [200, 200] ]
+      - attackers:
+          Hell Hound: 6@0+20
+      - attackers:
+          Skeleton: 10@0+5 10@100+5
+          Hell Hound: 6@0+20 6@300+20
+      - attackers:
+          Harpy: 40@10+20
+      - attackers:
+          Harpy: 40@10+20
+          Cerberus: 2@100+300
+      - attackers:
+          Skeleton Jr: 100@0+5
+          Skeleton: 10@0+10 10@150+10
+          Cerberus: 4@0+150
       - attackers:
           Skeleton Jr: 100@0+5
           Skeleton: 10@0+10 10@150+10
           Hell Hound: 8@80+10 8@180+10 8@280+10
           Harpy: 40@200+20
           Cerberus: 4@0+150
-#        defenders:
-          #Skeleton Goo Gun: [ [100, 250], [300, 250] ]
-          #Skeleton with Machine Gun: [ [200, 220], [300, 200] ]
-          #Skeleton Turret: [ [100, 200], [150, 210], [250, 210], [350, 190] ]
-          #Demigod: [ [200, 270] ]
-  - name: Beta
+  - name: Crooked
     startingFunds: 500
-    path: [ [0, 200], [100, 100], [200, 300], [400, 200] ]
+    path: 0 200 100 100 200 300 400 200
     waves:
       - attackers:
           Skeleton: 6@100+25
@@ -77,27 +78,37 @@ levels:
           Skeleton: 10@100+25
           Harpy: 6@200+20
           Hell Hound: 6@280+10 6@380+10
-#        defenders:
-          #Skeleton with Stick: [ [25, 225] ]
-          #Skeleton with Gun: [ [200, 250] ]
-          #Skeleton with Machine Gun: [ [125, 75] ]
-          #Skeleton Turret: [ [300, 300], [200, 350] ]
-          #Skeleton Goo Gun: [ [50, 100], [190, 170] ]
-          #Skeleton Rock Band: [ [100, 170] ]
-  - name: Gamma
+  - name: Island
     startingFunds: 1000
-    path: [ [0, 200], [200, 200], [200, 100], [100, 100], [100, 300], [300, 300], [300, 200], [400, 200] ]
+    path: 0 200 200 200 200 100 100 100 100 300 300 300 300 200 400 200
     waves:
       - attackers:
           Skeleton: 10@0+25
-        defenders:
-          Skeleton Rock Band: [ [150, 150] ]
       - attackers:
           Skeleton: 10@0+25
           Hell Hound: 6@80+10, 6@180+10
-#        defenders:
-          #Skeleton Rock Band: [ [150, 150] ]
-          #Skeleton Turret: [ [200, 250] ]
-          #Skeleton with Machine Gun: [ [75, 225] ]
-          #Skeleton Goo Gun: [ [125, 250], [225, 150] ]
+  - name: Straight
+    startingFunds: 300
+    path: 200 0 200 400
+    waves:
+      - attackers:
+          Skeleton: 10@0+25
+  - name: ZigZag
+    startingFunds: 300
+    path: 0 250 100 150 200 250 300 150 400 250
+    waves:
+      - attackers:
+          Skeleton: 10@0+25
+  - name: Resistance
+    startingFunds: 300
+    path: 0 200 50 200 50 100 100 100 100 300 150 300 150 100 200 100 200 300 250 300 250 100 300 100 300 300 350 300 350 200 400 200
+    waves:
+      - attackers:
+          Skeleton: 10@0+25
+  - name: Switchback
+    startingFunds: 300
+    path: 0 100 350 100 350 150 50 150 50 200 350 200 350 250 50 250 50 300 400 300
+    waves:
+      - attackers:
+          Skeleton: 10@0+25
 
