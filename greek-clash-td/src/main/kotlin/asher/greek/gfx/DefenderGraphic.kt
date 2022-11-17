@@ -28,7 +28,6 @@ import javafx.scene.paint.Color
 import javafx.scene.paint.Color.RED
 import javafx.scene.shape.Rectangle
 import javafx.scene.shape.Shape
-import tornadofx.onLeftClick
 import tornadofx.singleAssign
 
 /** Renders defender on main view, and in palette. */
@@ -37,12 +36,13 @@ class DefenderGraphic(
     val size: Double,
     val isOnPalette: Boolean = false,
     val isForPreview: Boolean = false
-) : Group() {
+) : Group(), GameComponent {
 
     var defenderShape by singleAssign<Rectangle>()
     var selectionShape by singleAssign<Shape>()
+    val textGroup = Group()
 
-    var isSelected: Boolean
+    override var isSelected: Boolean
         get() = selectionShape.isVisible
         set(value) {
             if (value) assert(isAvailableToPurchase)
@@ -55,7 +55,7 @@ class DefenderGraphic(
             if (!value)
                 isSelected = false
         }
-    var isValid: Boolean = false
+    var isValidPlacement: Boolean = false
         set(value) {
             field = value
             selectionShape.isVisible = !value
@@ -70,23 +70,20 @@ class DefenderGraphic(
                 isVisible = false
             }
             defenderShape = squareByCenter(position, size, color)
+            updateTextGroup()
 
             children.add(selectionShape)
             children.add(defenderShape)
-            children.add(createText())
+            children.add(textGroup)
 
             if (isForPreview) {
                 children.add(circle(position, range.toDouble(), fill = null, stroke = color))
             }
-            if (isInPlay) {
-                onLeftClick {
-                    isSelected = !isSelected
-                }
-            }
         }
     }
 
-    private fun createText() = Group().apply {
+    private fun updateTextGroup() = with(textGroup) {
+        children.removeAll()
         with (defender) {
             children.add(text(position, name.beforeSpace(), size / 2).also {
                 it.alignAbove(defenderShape)

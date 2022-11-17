@@ -73,6 +73,15 @@ class GameView(val game: GameState = GameState()) : View() {
                 action { restartLevel() }
             }
             separator { }
+            button("Upgrade") {
+                enableWhen { controller.canUpgradeSelected }
+                action { levelGraphics.upgradeSelected() }
+            }
+            button("Sell") {
+                enableWhen { controller.canSellSelected }
+                action { levelGraphics.sellSelected() }
+            }
+            separator { }
             text(game.waveText)
             separator { }
             checkbox("Testing", game._testMode)

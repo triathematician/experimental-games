@@ -22,18 +22,17 @@ package asher.greek.ui
 import asher.greek.assets.Assets
 import asher.greek.components.PlayerInfo
 import asher.greek.gfx.DefenderGraphic
+import asher.greek.gfx.GameComponentNone
 import asher.greek.gfx.GraphicsFactory.createPaletteGraphics
 import asher.greek.util.Point2
 import asher.greek.util.rectangle
 import javafx.geometry.Bounds
 import javafx.scene.Group
 import javafx.scene.paint.Color.LIGHTCYAN
-import tornadofx.getProperty
 import tornadofx.onChange
 import tornadofx.onLeftClick
-import tornadofx.property
 
-class DefenderPalette(_bounds: Bounds) : Group() {
+class DefenderPalette(val controller: GameController, _bounds: Bounds) : Group() {
 
     val SPACER = 14.0
     val SPACER2 = SPACER + 13.0
@@ -44,31 +43,30 @@ class DefenderPalette(_bounds: Bounds) : Group() {
             it.initToolSelection()
         }
     }
-    var selectedTool by property<DefenderGraphic?>(null)
-    var _selectedTool = getProperty(DefenderPalette::selectedTool).apply {
-        onChange {
-            allTools.forEach { it.isSelected = it == value && it.isAvailableToPurchase }
-        }
-    }
 
     init {
         children += rectangle(_bounds, LIGHTCYAN)
         children.addAll(allTools)
+
+        controller._selected.onChange { gc ->
+            allTools.forEach { it.isSelected = it == gc && it.isAvailableToPurchase }
+        }
     }
 
     private fun DefenderGraphic.initToolSelection() {
         onLeftClick {
-            selectedTool = if (isSelected || !isAvailableToPurchase) null else this
+            if (isSelected || !isAvailableToPurchase)
+                controller.selectNone()
+            else
+                controller.selected = this
         }
     }
 
     fun update(player: PlayerInfo) {
         children.mapNotNull { it as? DefenderGraphic }.forEach {
             it.isAvailableToPurchase = it.defender.cost <= player.funds
-        }
-        selectedTool?.let {
-            if (it.defender.cost > player.funds)
-                selectedTool = null
+            if (it == controller.selected && !it.isAvailableToPurchase)
+                controller.selectNone()
         }
     }
 

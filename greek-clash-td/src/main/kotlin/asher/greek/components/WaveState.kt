@@ -142,6 +142,26 @@ class WaveState(val game: GameState, val levelWave: LevelWave) {
 
     //region DEFENDERS
 
+    /** Upgrade defender. */
+    fun upgrade(def: Defender) {
+        val nue = def.upgrade()
+        if (nue == null) {
+            println("Unexpected attempt to upgrade defender without defined upgrades.")
+            return
+        }
+        defenders -= def
+        defenders += nue
+        game.player.funds -= def.cost // TODO - variable cost per upgrade
+        println("Upgraded ${def.name} to ${nue.name} for \$${def.cost}")
+    }
+
+    /** Sell defender. */
+    fun sell(def: Defender) {
+        game.player.funds += def.cost // TODO - variable cost
+        defenders.remove(def)
+        println("Sold $def for \$${def.cost}")
+    }
+
     /** Defender fires at nearest target. */
     fun Defender.fireAtNearest() {
         if (timeSinceLastFire >= fireRate) {

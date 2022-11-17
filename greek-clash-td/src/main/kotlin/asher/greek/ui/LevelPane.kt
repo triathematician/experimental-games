@@ -34,10 +34,13 @@ import asher.greek.util.rectangle
 import asher.greek.util.scaleToFit
 import javafx.animation.AnimationTimer
 import javafx.scene.Group
+import javafx.scene.input.MouseButton
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color.*
 import javafx.scene.shape.Path
 import javafx.scene.shape.Shape
+import tornadofx.onLeftClick
+import tornadofx.onRightClick
 
 /** JavaFX scene for a level. */
 class LevelPane(val game: GameState, val controller: GameController) : Pane() {
@@ -46,8 +49,8 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
         clip = rectangle(VIEW_BOUNDS)
     }
     val levelGroup = Group()
-    val defPalette = DefenderPalette(PALETTE_BOUNDS)
-    val toolDragger = DefenderDraggerTool(defPalette._selectedTool, this::spaceAvailable)
+    val defPalette = DefenderPalette(controller, PALETTE_BOUNDS)
+    val toolDragger = DefenderDraggerTool(controller, this::spaceAvailable)
     val stats = LevelStatsGraphics(LEVEL_BOUNDS)
     lateinit var bgGraphics: LevelBackgroundGraphics
     lateinit var pathGraphics: Shape
@@ -106,7 +109,12 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
 
         // set up graphics
         bgGraphics = LevelBackgroundGraphics(game.curLevel, toolDragger).apply {
-            setOnMouseClicked { maybeAddDefender(waveState, it.x, it.y) }
+            setOnMouseClicked {
+                if (it.clickCount == 1 && it.button == MouseButton.PRIMARY)
+                    maybePlaceDefender(waveState, it.x, it.y)
+                else if (it.clickCount == 1 && it.button == MouseButton.SECONDARY)
+                    controller.selectNone()
+            }
         }
         pathGraphics = game.curLevel.path.createGraphics()
         levelGroup.children.add(bgGraphics)
@@ -136,22 +144,12 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
         // advance simulation
         waveState.tick()
 
-        // update attackers
-        (waveState.attackers - attackers.keys).forEach { createAttackerGraphics(it) }
-        (attackers.keys - waveState.attackers).forEach { removeAttackerGraphics(it) }
-        attackers.forEach { (a, s) -> a.updateGraphics(s) }
+        refreshAttackerGraphics()
+        refreshDefenderGraphics()
+        refreshBulletGraphics()
+        refreshGameInfo()
 
-        // update defenders
-        (waveState.bullets - bullets.keys).forEach { createBulletGraphics(it) }
-        (bullets.keys - waveState.bullets).forEach { removeBulletGraphics(it) }
-        bullets.forEach { (b, s) -> b.updateGraphics(s) }
-
-        // animate hits
-        waveState.hits.mapNotNull { attackers[it.second] }.forEach { it.hitAnimation() }
-
-        // update stats
-        stats.update(waveState, game.player)
-        defPalette.update(game.player)
+        animateEvents()
 
         if (waveState.waveOver) {
             stopWaveTimer()
@@ -159,6 +157,41 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
             game.isWaveOver = true
         }
     }
+
+    //endregion
+
+    //region GRAPHICS UPDATERS
+
+    private fun refreshAttackerGraphics() {
+        (waveState.attackers - attackers.keys).forEach { createAttackerGraphics(it) }
+        (attackers.keys - waveState.attackers).forEach { removeAttackerGraphics(it) }
+        attackers.forEach { (a, s) -> a.updateGraphics(s) }
+    }
+
+    private fun refreshDefenderGraphics() {
+        (waveState.defenders - defenders.keys).forEach { createDefenderGraphics(it) }
+        (defenders.keys - waveState.defenders).forEach { removeDefenderGraphics(it) }
+        // defenders.forEach { (a, s) -> a.updateGraphics(s) }
+    }
+
+    private fun refreshBulletGraphics() {
+        (waveState.bullets - bullets.keys).forEach { createBulletGraphics(it) }
+        (bullets.keys - waveState.bullets).forEach { removeBulletGraphics(it) }
+        bullets.forEach { (b, s) -> b.updateGraphics(s) }
+    }
+
+    private fun animateEvents() {
+        waveState.hits.mapNotNull { attackers[it.second] }.forEach { it.hitAnimation() }
+    }
+
+    private fun refreshGameInfo() {
+        stats.update(waveState, game.player)
+        defPalette.update(game.player)
+    }
+
+    //endregion
+
+    //region TIMER ACTIONS
 
     /** Pauses the animation. */
     fun pauseWaveTimer() {
@@ -182,23 +215,54 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
 
     //region GRAPHIC CREATORS/DESTRUCTORS
 
-    fun maybeAddDefender(waveState: WaveState, x: Double, y: Double) {
-        if (toolDragger.previewGraphic?.isValid != true)
-            return
-        toolDragger.previewGraphic?.let { dg ->
-            val newDef = dg.defender.at(x, y)
-            game.player.funds -= newDef.cost
-            waveState.defenders.add(newDef)
-            createDefenderGraphics(newDef)
-
-            stats.update(waveState, game.player)
-            defPalette.update(game.player)
+    fun upgradeSelected() {
+        when(val s = controller.selected) {
+            is DefenderGraphic -> {
+                waveState.upgrade(s.defender)
+                refreshDefenderGraphics()
+                refreshGameInfo()
+                controller.selectNone()
+            }
         }
     }
 
-    fun createDefenderGraphics(d: Defender) = d.createGraphics().also {
-        defenders[d] = it
-        levelGroup.children.add(it)
+    fun sellSelected() {
+        when(val s = controller.selected) {
+            is DefenderGraphic -> {
+                waveState.sell(s.defender)
+                refreshDefenderGraphics()
+                refreshGameInfo()
+                controller.selectNone()
+            }
+        }
+    }
+
+    fun maybePlaceDefender(waveState: WaveState, x: Double, y: Double) {
+        val dg = toolDragger.previewGraphic ?: return
+        if (!dg.isValidPlacement)
+            return
+
+        val newDef = dg.defender.at(x, y)
+        game.player.funds -= newDef.cost
+        waveState.defenders.add(newDef)
+        createDefenderGraphics(newDef)
+
+        stats.update(waveState, game.player)
+        defPalette.update(game.player)
+    }
+
+    fun createDefenderGraphics(d: Defender) = d.createGraphics().apply {
+        defenders[d] = this
+        levelGroup.children.add(this)
+        if (isInPlay) {
+            onLeftClick {
+                isSelected = !isSelected
+                if (isSelected)
+                    controller.selected = this
+                else
+                    controller.selectNone()
+            }
+        }
     }
 
     fun createAttackerGraphics(a: Attacker) = a.createGraphics().also {

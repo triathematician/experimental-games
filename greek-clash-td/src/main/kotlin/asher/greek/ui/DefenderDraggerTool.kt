@@ -23,14 +23,13 @@ import asher.greek.gfx.DefenderGraphic
 import asher.greek.util.circle
 import asher.greek.util.point
 import asher.greek.util.recenter
-import javafx.beans.value.ObservableValue
 import javafx.scene.Group
 import javafx.scene.paint.Color.BLACK
 import javafx.scene.shape.Shape
 
 /** Renders defender being placed on top of canvas. */
 class DefenderDraggerTool(
-    val selection: ObservableValue<DefenderGraphic?>,
+    val controller: GameController,
     val validPlacement: (Shape) -> Boolean
 ) : Group() {
 
@@ -44,17 +43,18 @@ class DefenderDraggerTool(
                 previewGraphic = newGraphic
 
                 // must calculate intersection after setting parent
-                newGraphic.isValid = validPlacement(newGraphic.defenderShape)
+                newGraphic.isValidPlacement = validPlacement(newGraphic.defenderShape)
             }
         }
 
-    val noSelectionGraphic = circle(pos, 2.0).apply {
+    private val noSelectionGraphic = circle(pos, 2.0).apply {
         fill = null
         stroke = BLACK
     }
+
     /** Rendered at mouse to show where it will be placed. */
     var previewGraphic: DefenderGraphic? = null
-        set(value) {
+        private set(value) {
             field = value
             children.setAll(value ?: noSelectionGraphic)
         }
@@ -62,11 +62,22 @@ class DefenderDraggerTool(
     init {
         isMouseTransparent = true
         children.add(noSelectionGraphic)
-        selection.addListener { _, _, _ -> updateTool() }
+        controller._selected.addListener { _, _, _ -> updateTool() }
     }
 
-    fun updateTool() {
-        val v = selection.value
-        previewGraphic = v?.let { DefenderGraphic(v.defender.at(pos.x, pos.y), v.size, isForPreview = true) }
+    fun mouseEntered() {
+        updateTool()
+    }
+
+    fun mouseExited() {
+        previewGraphic = null
+    }
+
+    private fun updateTool() {
+        val v = controller._selected.value
+        previewGraphic = if (v is DefenderGraphic && v.isOnPalette)
+            DefenderGraphic(v.defender.at(pos.x, pos.y), v.size, isForPreview = true)
+        else
+            null
     }
 }

@@ -20,7 +20,33 @@
 package asher.greek.ui
 
 import asher.greek.components.GameState
+import asher.greek.gfx.DefenderGraphic
+import asher.greek.gfx.GameComponent
+import asher.greek.gfx.GameComponentNone
+import tornadofx.booleanBinding
+import tornadofx.getProperty
+import tornadofx.property
 
 /** Manages changes to game state, add/remove defenders, etc. */
 class GameController(val game: GameState, val mouse: GameMouse = GameMouse()) {
+
+    var selected: GameComponent by property(GameComponentNone)
+    var _selected = getProperty(GameController::selected).apply {
+        addListener { _, old, _ -> old.isSelected = false }
+    }
+
+    var canUpgradeSelected = booleanBinding(_selected) {
+        get().let {
+            it is DefenderGraphic && it.isInPlay && it.defender.isUpgradeable && it.defender.cost <= game.player.funds
+        }
+    }
+
+    var canSellSelected = booleanBinding(_selected) {
+        get().let {it is DefenderGraphic && it.isInPlay }
+    }
+
+    fun selectNone() {
+        selected = GameComponentNone
+    }
+
 }

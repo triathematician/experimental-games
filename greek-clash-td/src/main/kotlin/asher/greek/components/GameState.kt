@@ -84,7 +84,7 @@ class GameState {
         initLevel()
     }
 
-    //region MUTATORS
+    //region WAVE/LEVEL CHANGE
 
     fun previousWave() {
         require(hasPreviousWave.get())
