@@ -40,6 +40,7 @@ class DefenderGraphic(
 
     var defenderShape by singleAssign<Rectangle>()
     var selectionShape by singleAssign<Shape>()
+    var rangeShape by singleAssign<Shape>()
     val textGroup = Group()
 
     override var isSelected: Boolean
@@ -47,6 +48,7 @@ class DefenderGraphic(
         set(value) {
             if (value) assert(isAvailableToPurchase)
             selectionShape.isVisible = value
+            rangeShape.isVisible = value && !isOnPalette
         }
     var isAvailableToPurchase: Boolean = false
         set(value) {
@@ -70,15 +72,14 @@ class DefenderGraphic(
                 isVisible = false
             }
             defenderShape = squareByCenter(position, size, color)
+            rangeShape = circle(position, range.toDouble(), fill = null, stroke = color)
+            rangeShape.isVisible = isForPreview
             updateTextGroup()
 
             children.add(selectionShape)
             children.add(defenderShape)
             children.add(textGroup)
-
-            if (isForPreview) {
-                children.add(circle(position, range.toDouble(), fill = null, stroke = color))
-            }
+            children.add(rangeShape)
         }
     }
 

@@ -19,39 +19,49 @@
  */
 package asher.greek.gfx
 
+import asher.greek.components.Defender
 import asher.greek.components.PlayerInfo
 import asher.greek.components.WaveState
+import asher.greek.ui.GameController
 import asher.greek.util.righttext
 import asher.greek.util.text
+import javafx.beans.property.Property
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Bounds
 import javafx.scene.Group
 import javafx.scene.text.Font
+import tornadofx.stringBinding
 
 /** Stats for current level progress. */
-class LevelStatsGraphics(levelBounds: Bounds): Group() {
+class LevelStatsGraphics(controller: GameController, levelBounds: Bounds): Group() {
 
-    val lives = SimpleStringProperty("Health: 0")
-    val funds = SimpleStringProperty("Funds: 0")
-    val clock = SimpleStringProperty("Clock: 0")
-    val note = SimpleStringProperty("")
+    private val lives = controller.game._playerLives.stringBinding { "Lives: $it" }
+    private val funds = controller.game._playerFunds.stringBinding { "Funds: $it" }
+    private val clock = controller.clockText
+    private val note = controller.waveTerminationText
+    private val note2 = controller._selected.stringBinding {
+        when (it) {
+            is DefenderGraphic -> "Defender: ${it.defender.stats()}"
+            is GameComponentNone -> ""
+            else -> it.toString()
+        }
+    }
 
-    val font = Font("Verdana", 18.0)
-    val font2 = Font("Verdana", 10.0)
+    private val font = Font("Verdana", 18.0)
+    private val font2 = Font("Verdana", 10.0)
+    private val font3 = Font("Verdana", 8.0)
 
     init {
         text(lives, levelBounds.minX, levelBounds.minY - 10, font)
         righttext(funds, levelBounds.maxX, -10, width = levelBounds.width / 2, font)
         text(clock, levelBounds.minX, levelBounds.maxY + 15, font2)
         righttext(note, levelBounds.maxX, levelBounds.maxY + 15, width = levelBounds.width / 2, font2)
+        text(note2, levelBounds.minY, levelBounds.maxY + 30, font3)
     }
 
-    fun update(wave: WaveState, playerInfo: PlayerInfo) {
-        lives.value = "Lives: ${playerInfo.lives}"
-        funds.value = "Funds: ${playerInfo.funds}"
-        clock.value = "Level: ${wave.levelWave.level.name} wave ${wave.levelWave.num} Clock: ${wave.clock}"
-        val wonWave = wave.attackers.isEmpty() && wave.clock > wave.levelWave.lastSpawnTime
-        val lostWave = playerInfo.lives == 0
-        note.value = if (wonWave) "You successfully defended this wave!" else if (lostWave) "You lost all your lives!" else ""
-    }
+    private fun Defender.stats() =
+        "$name ($type) " +
+        "rg/atk/rt/blt: $range/${if (attackPower == 0) slowPower else attackPower}/$fireRate/$bulletSpeed " +
+        "$: $cost/$sellPrice " +
+        "upg: ${if (upgrades.isNotEmpty()) "yes" else "max"}"
 }

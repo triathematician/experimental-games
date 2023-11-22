@@ -20,7 +20,7 @@
 package asher.greek.components
 
 /** A level-wave configuration. */
-class LevelWave(val level: Level, val num: Int) {
+class LevelWave(val level: Level, val num: Int, val total: Int) {
     var order = AttackOrder()
     var defenders = mutableListOf<Defender>()
 

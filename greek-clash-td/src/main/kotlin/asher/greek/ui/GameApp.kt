@@ -26,7 +26,7 @@ import tornadofx.*
 class GameView(val game: GameState = GameState()) : View() {
 
     val controller = GameController(game)
-    val levelGraphics = LevelPane(game, controller)
+    val levelGraphics = LevelPane(controller)
 
     override val root = borderpane {
         top = toolbar {
@@ -82,7 +82,7 @@ class GameView(val game: GameState = GameState()) : View() {
                 action { levelGraphics.sellSelected() }
             }
             separator { }
-            text(game.waveText)
+            text(controller.waveText)
             separator { }
             checkbox("Testing", game._testMode)
         }

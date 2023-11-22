@@ -33,7 +33,7 @@ class WaveConfig {
         attackers[name] = timeList
     }
 
-    fun createWave(it: Level, num: Int) = LevelWave(it, num).apply {
+    fun createWave(it: Level, num: Int, total: Int) = LevelWave(it, num, total).apply {
         order = createAttackOrder()
         defenders = createDefenders()
     }

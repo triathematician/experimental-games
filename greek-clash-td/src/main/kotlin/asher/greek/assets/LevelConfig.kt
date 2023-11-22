@@ -38,6 +38,6 @@ class LevelConfig {
         }
         it.startingFunds = startingFunds
         it.startingLives = startingLives
-        it.waves = waves.mapIndexed { i, w -> w.createWave(it, i + 1) }
+        it.waves = waves.mapIndexed { i, w -> w.createWave(it, i + 1, waves.count()) }
     }
 }

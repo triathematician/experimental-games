@@ -29,7 +29,7 @@ import java.util.*
  * Classes might include: NORMAL, RANGED, AREA
  */
 data class Defender(
-    val name: String,
+    var name: String = "",
     val type: String? = null,
     val fireRate: Int,
     val range: Int,
@@ -41,8 +41,8 @@ data class Defender(
     val color: Color? = null,
     val uid: UUID = UUID.randomUUID(),
     var position: Point2 = Point2(),
-    // TODO - variable cost per upgrade
-    var upgrades: List<Defender> = listOf()
+    var upgrades: List<Defender> = listOf(),
+    val sellPrice: Int = cost / 2
 ) {
 
     var speedMultiplier = 1.0
@@ -55,7 +55,37 @@ data class Defender(
 
     fun upgrade(): Defender? {
         if (!isUpgradeable) return null
-        return upgrades.first()
-            .copy(type = type, color = color, position = Point2(position.x, position.y), upgrades = upgrades.drop(1))
+        return upgrades.first().let {
+            it.copy(
+                name = it.name.ifBlank { name.increment() },
+                type = type,
+                color = color,
+                position = Point2(position.x, position.y),
+                upgrades = upgrades.drop(1),
+                sellPrice = sellPrice + it.cost / 2
+            )
+        }
     }
+
+    companion object {
+
+        private fun String.increment(): String {
+            val suffix = substringAfterLast(" ")
+            val newSuffix = when (suffix) {
+                "I" -> "II"
+                "II" -> "III"
+                "III" -> "IV"
+                "IV" -> "V"
+                "V" -> "VI"
+                "VI" -> "VII"
+                "VII" -> "VIII"
+                "VIII" -> "IX"
+                "IX" -> "X"
+                else -> return "$this II"
+            }
+            return "${substringBeforeLast(" ")} $newSuffix"
+        }
+
+    }
+
 }

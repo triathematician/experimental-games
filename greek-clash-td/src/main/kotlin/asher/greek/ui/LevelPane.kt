@@ -40,26 +40,28 @@ import javafx.scene.paint.Color.*
 import javafx.scene.shape.Path
 import javafx.scene.shape.Shape
 import tornadofx.onLeftClick
-import tornadofx.onRightClick
 
 /** JavaFX scene for a level. */
-class LevelPane(val game: GameState, val controller: GameController) : Pane() {
+class LevelPane(private val controller: GameController) : Pane() {
 
-    val resizableGroup = Group().apply {
-        clip = rectangle(VIEW_BOUNDS)
-    }
-    val levelGroup = Group()
-    val defPalette = DefenderPalette(controller, PALETTE_BOUNDS)
-    val toolDragger = DefenderDraggerTool(controller, this::spaceAvailable)
-    val stats = LevelStatsGraphics(LEVEL_BOUNDS)
-    lateinit var bgGraphics: LevelBackgroundGraphics
-    lateinit var pathGraphics: Shape
-    val attackers = mutableMapOf<Attacker, Group>()
-    val defenders = mutableMapOf<Defender, DefenderGraphic>()
-    val bullets = mutableMapOf<Bullet, Shape>()
+    private val resizableGroup = Group().apply { clip = rectangle(VIEW_BOUNDS) }
+    private val levelGroup = Group()
+    private val defPalette = DefenderPalette(controller, PALETTE_BOUNDS)
+    private val toolDragger = DefenderDraggerTool(controller, this::spaceAvailable)
+    private val stats = LevelStatsGraphics(controller, LEVEL_BOUNDS)
+    private lateinit var bgGraphics: LevelBackgroundGraphics
+    private lateinit var pathGraphics: Shape
 
-    var waveState = WaveState(game, game.curWave)
-    var timer: AnimationTimer? = null
+    private val attackers = mutableMapOf<Attacker, Group>()
+    private val defenders = mutableMapOf<Defender, DefenderGraphic>()
+    private val bullets = mutableMapOf<Bullet, Shape>()
+
+    private val gameState
+        get() = controller.game
+    private val waveState
+        get() = controller.waveState
+
+    private var timer: AnimationTimer? = null
 
     init {
         children += resizableGroup
@@ -79,7 +81,7 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
     }
 
     /** Shapes comprising occupied area. */
-    fun spaceAvailable(shape: Shape): Boolean {
+    private fun spaceAvailable(shape: Shape): Boolean {
         if (!bgGraphics.boundsInParent.contains(shape.boundsInParent)) {
             return false
         }
@@ -95,20 +97,20 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
         pauseWaveTimer()
 
         // create new wave
-        val defs = if (keepDefenders) waveState.defenders else listOf()
-        waveState = WaveState(game, game.curWave).also {
+        val defs = if (keepDefenders) controller.waveState.defenders else listOf()
+        controller.waveState = WaveState(gameState, gameState.curWave).also {
             it.setup(defs)
         }
-        game.isWaveStarted = false
-        game.isWavePaused = false
-        game.isPassedWave = false
-        game.isWaveOver = false
+        gameState.isWaveStarted = false
+        gameState.isWavePaused = false
+        gameState.isPassedWave = false
+        gameState.isWaveOver = false
 
         // reset graphics
         levelGroup.children.clear()
 
         // set up graphics
-        bgGraphics = LevelBackgroundGraphics(game.curLevel, toolDragger).apply {
+        bgGraphics = LevelBackgroundGraphics(gameState.curLevel, toolDragger).apply {
             setOnMouseClicked {
                 if (it.clickCount == 1 && it.button == MouseButton.PRIMARY)
                     maybePlaceDefender(waveState, it.x, it.y)
@@ -116,13 +118,12 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
                     controller.selectNone()
             }
         }
-        pathGraphics = game.curLevel.path.createGraphics()
+        pathGraphics = gameState.curLevel.path.createGraphics()
         levelGroup.children.add(bgGraphics)
         levelGroup.children.add(pathGraphics)
         waveState.defenders.forEach { createDefenderGraphics(it) }
 
-        stats.update(waveState, game.player)
-        defPalette.update(game.player)
+        defPalette.update(gameState.playerInfo)
     }
 
     //region MAIN GAME TIMER
@@ -135,7 +136,7 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
             }
         }.also {
             it.start()
-            game.isWaveStarted = true
+            gameState.isWaveStarted = true
         }
     }
 
@@ -153,8 +154,9 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
 
         if (waveState.waveOver) {
             stopWaveTimer()
-            game.isPassedWave = !waveState.playerLost
-            game.isWaveOver = true
+            gameState.isPassedWave = !waveState.playerLost
+            gameState.isWaveOver = true
+            refreshGameInfo()
         }
     }
 
@@ -185,8 +187,7 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
     }
 
     private fun refreshGameInfo() {
-        stats.update(waveState, game.player)
-        defPalette.update(game.player)
+        defPalette.update(gameState.playerInfo)
     }
 
     //endregion
@@ -196,13 +197,13 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
     /** Pauses the animation. */
     fun pauseWaveTimer() {
         timer?.stop()
-        game.isWavePaused = true
+        gameState.isWavePaused = true
     }
 
     /** Starts the animation. */
     fun unpauseWaveTimer() {
         timer?.start()
-        game.isWavePaused = false
+        gameState.isWavePaused = false
     }
 
     /** Stops the animation. */
@@ -218,10 +219,13 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
     fun upgradeSelected() {
         when(val s = controller.selected) {
             is DefenderGraphic -> {
-                waveState.upgrade(s.defender)
+                val nue = waveState.upgrade(s.defender)
                 refreshDefenderGraphics()
+                defenders[nue]!!.also {
+                    it.isSelected = true
+                    controller.selected = it
+                }
                 refreshGameInfo()
-                controller.selectNone()
             }
         }
     }
@@ -237,21 +241,20 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
         }
     }
 
-    fun maybePlaceDefender(waveState: WaveState, x: Double, y: Double) {
+    private fun maybePlaceDefender(waveState: WaveState, x: Double, y: Double) {
         val dg = toolDragger.previewGraphic ?: return
         if (!dg.isValidPlacement)
             return
 
         val newDef = dg.defender.at(x, y)
-        game.player.funds -= newDef.cost
+        gameState.playerFunds -= newDef.cost
         waveState.defenders.add(newDef)
         createDefenderGraphics(newDef)
 
-        stats.update(waveState, game.player)
-        defPalette.update(game.player)
+        defPalette.update(gameState.playerInfo)
     }
 
-    fun createDefenderGraphics(d: Defender) = d.createGraphics().apply {
+    private fun createDefenderGraphics(d: Defender) = d.createGraphics().apply {
         defenders[d] = this
         levelGroup.children.add(this)
         if (isInPlay) {
@@ -265,25 +268,25 @@ class LevelPane(val game: GameState, val controller: GameController) : Pane() {
         }
     }
 
-    fun createAttackerGraphics(a: Attacker) = a.createGraphics().also {
+    private fun createAttackerGraphics(a: Attacker) = a.createGraphics().also {
         attackers[a] = it
         levelGroup.children.add(it)
     }
 
-    fun createBulletGraphics(b: Bullet) = b.createGraphics().also {
+    private fun createBulletGraphics(b: Bullet) = b.createGraphics().also {
         bullets[b] = it
         levelGroup.children.add(it)
     }
 
-    fun removeDefenderGraphics(d: Defender) {
+    private fun removeDefenderGraphics(d: Defender) {
         levelGroup.children.remove(defenders[d])
     }
 
-    fun removeAttackerGraphics(a: Attacker) {
+    private fun removeAttackerGraphics(a: Attacker) {
         levelGroup.children.remove(attackers[a])
     }
 
-    fun removeBulletGraphics(b: Bullet) {
+    private fun removeBulletGraphics(b: Bullet) {
         levelGroup.children.remove(bullets[b])
     }
 

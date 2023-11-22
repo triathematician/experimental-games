@@ -28,9 +28,11 @@ import tornadofx.stringBinding
 /** Manages the state of the overall game, including current level, player assets, etc. */
 class GameState {
     val levels = Assets.levelConfig.createLevels()
-    val player = PlayerInfo()
 
-    private var levelIndex by property(0)
+    var playerFunds by property(0)
+    var playerLives by property(0)
+
+    var levelIndex by property(0)
     private var waveIndex by property(0)
 
     var isWaveStarted by property(false)
@@ -40,20 +42,35 @@ class GameState {
 
     var isTestMode by property(false)
 
+    val playerInfo
+        get() = PlayerInfo(playerFunds, playerLives)
     val curLevel
         get() = levels[levelIndex]
     val curWave
         get() = curLevel.waves[waveIndex]
 
-    private val _levelIndex = getProperty(GameState::levelIndex)
-    private val _waveIndex = getProperty(GameState::waveIndex)
+    //region PROPERTIES
+
+    val _playerFunds = getProperty(GameState::playerFunds)
+    val _playerLives = getProperty(GameState::playerLives)
+
+    val _levelIndex = getProperty(GameState::levelIndex)
+    val _waveIndex = getProperty(GameState::waveIndex)
 
     val _waveStarted = getProperty(GameState::isWaveStarted)
     val _wavePaused = getProperty(GameState::isWavePaused)
     val _waveOver = getProperty(GameState::isWaveOver)
-    val _passedWave = getProperty(GameState::isPassedWave)
+    private val _passedWave = getProperty(GameState::isPassedWave)
 
     val _testMode = getProperty(GameState::isTestMode)
+
+    //endregion
+
+    //region DERIVED PROPERTIES
+
+    val levelActive = _waveStarted.booleanBinding(_wavePaused, _waveOver) {
+        it!! && !isWavePaused && !isWaveOver
+    }
 
     val hasPreviousLevel = booleanBinding(_levelIndex) { get() > 0 }
     val hasNextLevel = booleanBinding(_levelIndex) { get() < levels.size - 1 }
@@ -61,24 +78,20 @@ class GameState {
     val hasPreviousWave = booleanBinding(_waveIndex) { get() > 0 }
     val hasNextWave = booleanBinding(_waveIndex, _levelIndex) { get() < curLevel.waves.size - 1 }
 
-    val canProceedToPreviousWave = booleanBinding(hasPreviousWave, _testMode) {
-        get() && isTestMode
+    val canProceedToPreviousWave = hasPreviousWave.booleanBinding(_testMode) {
+        it!! && isTestMode
     }
-    val canProceedToNextWave = booleanBinding(hasNextWave, _passedWave, _testMode) {
-        get() && (isTestMode || isPassedWave)
+    val canProceedToNextWave = hasNextWave.booleanBinding(_passedWave, _testMode) {
+        it!! && (isTestMode || isPassedWave)
     }
-    val canProceedToPreviousLevel = booleanBinding(hasPreviousLevel, _testMode) {
-        get() && isTestMode
+    val canProceedToPreviousLevel = hasPreviousLevel.booleanBinding(_testMode) {
+        it!! && isTestMode
     }
-    val canProceedToNextLevel = booleanBinding(hasNextLevel, _passedWave, hasNextWave, _testMode) {
-        get() && (isTestMode || (isPassedWave && !hasNextWave.get()))
-    }
-
-    val waveText = stringBinding(_waveIndex, _levelIndex) {
-        "Level ${levelIndex + 1}-${curLevel.name}, Wave ${get() + 1}"
+    val canProceedToNextLevel = hasNextLevel.booleanBinding(_passedWave, hasNextWave, _testMode) {
+        it!! && (isTestMode || (isPassedWave && !hasNextWave.get()))
     }
 
-    val levelActive = booleanBinding(_waveStarted, _wavePaused, _waveOver) { get() && !isWavePaused && !isWaveOver }
+    //endregion
 
     init {
         initLevel()
@@ -112,8 +125,8 @@ class GameState {
 
     internal fun initLevel() {
         waveIndex = 0
-        player.funds = curLevel.startingFunds
-        player.lives = curLevel.startingLives
+        playerFunds = curLevel.startingFunds
+        playerLives = curLevel.startingLives
     }
 
     //endregion

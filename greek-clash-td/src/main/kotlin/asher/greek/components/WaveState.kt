@@ -39,9 +39,9 @@ class WaveState(val game: GameState, val levelWave: LevelWave) {
     val items: List<Any>
         get() = attackers + defenders + bullets
     val waveOver: Boolean
-        get() = (attackers.isEmpty() && clock > levelWave.lastSpawnTime) || game.player.lives == 0
+        get() = (attackers.isEmpty() && clock > levelWave.lastSpawnTime) || game.playerLives == 0
     val playerLost: Boolean
-        get() = game.player.lives == 0
+        get() = game.playerLives == 0
 
     //region WAVE LIFECYCLE
 
@@ -106,8 +106,8 @@ class WaveState(val game: GameState, val levelWave: LevelWave) {
         println("$name reached end of path at time $clock with $health health")
 
         // lose 1 life minimum, 2 lives at 500, 3 at 1000, etc., but don't go below 0
-        game.player.lives = maxOf(0, game.player.lives - 1 - (hitPoints/500))
-        if (game.player.lives == 0) {
+        game.playerLives = maxOf(0, game.playerLives - 1 - (hitPoints/500))
+        if (game.playerLives == 0) {
             playerLoses()
         }
         despawn()
@@ -119,7 +119,7 @@ class WaveState(val game: GameState, val levelWave: LevelWave) {
         attackers -= this
 
         // gain funds based on hit points
-        game.player.funds += (hitPoints.toDouble().pow(.75).toInt() / 5) * 5
+        game.playerFunds += (hitPoints.toDouble().pow(.75).toInt() / 5) * 5
     }
 
     /** When attacker despawns. */
@@ -143,23 +143,21 @@ class WaveState(val game: GameState, val levelWave: LevelWave) {
     //region DEFENDERS
 
     /** Upgrade defender. */
-    fun upgrade(def: Defender) {
+    fun upgrade(def: Defender): Defender {
         val nue = def.upgrade()
-        if (nue == null) {
-            println("Unexpected attempt to upgrade defender without defined upgrades.")
-            return
-        }
+            ?: throw IllegalStateException("Unexpected attempt to upgrade defender without defined upgrades.")
         defenders -= def
         defenders += nue
-        game.player.funds -= def.cost // TODO - variable cost per upgrade
-        println("Upgraded ${def.name} to ${nue.name} for \$${def.cost}")
+        game.playerFunds -= nue.cost
+        println("Upgraded ${def.name} to ${nue.name} for \$${nue.cost}")
+        return nue
     }
 
     /** Sell defender. */
     fun sell(def: Defender) {
-        game.player.funds += def.cost // TODO - variable cost
+        game.playerFunds += def.sellPrice
         defenders.remove(def)
-        println("Sold $def for \$${def.cost}")
+        println("Sold ${def.name} for \$${def.sellPrice}")
     }
 
     /** Defender fires at nearest target. */

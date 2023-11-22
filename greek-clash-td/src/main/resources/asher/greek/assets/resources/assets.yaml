@@ -52,21 +52,10 @@ defenders:
     cost: 50
     color: GRAY
     upgrades:
-      - name: Skeleton with Stick II
-        fireRate: 45
-        range: 55
-        attackPower: 15
-        cost: 50
-      - name: Skeleton with Stick III
-        fireRate: 40
-        range: 60
-        attackPower: 20
-        cost: 50
-      - name: Skeleton with Stick IV
-        fireRate: 35
-        range: 75
-        attackPower: 25
-        cost: 50
+      - { fireRate: 45, range: 55, attackPower: 15, cost: 35 }
+      - { fireRate: 40, range: 60, attackPower: 20, cost: 40 }
+      - { fireRate: 35, range: 75, attackPower: 25, cost: 45 }
+      - { fireRate: 30, range: 90, attackPower: 30, cost: 50 }
 
   - name: Skeleton with Bow & Arrow
     type: Ranged
@@ -76,6 +65,11 @@ defenders:
     attackPower: 30
     cost: 200
     color: SANDYBROWN
+    upgrades:
+      - { fireRate: 45, range: 95, attackPower: 35, cost: 125 }
+      - { fireRate: 40, range: 100, attackPower: 40, cost: 150 }
+      - { fireRate: 35, range: 125, attackPower: 45, cost: 175 }
+      - { fireRate: 30, range: 150, attackPower: 50, cost: 200 }
 
   - name: Skeleton with Gun
     type: Ranged
@@ -84,6 +78,11 @@ defenders:
     attackPower: 50
     cost: 300
     color: SANDYBROWN
+    upgrades:
+      - { fireRate: 35, range: 110, attackPower: 60, cost: 150 }
+      - { fireRate: 30, range: 120, attackPower: 70, cost: 200 }
+      - { fireRate: 25, range: 150, attackPower: 80, cost: 250 }
+      - { fireRate: 20, range: 175, attackPower: 90, cost: 300 }
 
   - name: Skeleton with Machine Gun
     type: Ranged
@@ -92,6 +91,10 @@ defenders:
     attackPower: 80
     cost: 500
     color: SADDLEBROWN
+    upgrades:
+      - { fireRate: 19, range: 130, attackPower: 90, cost: 300 }
+      - { fireRate: 17, range: 135, attackPower: 100, cost: 350 }
+      - { fireRate: 15, range: 150, attackPower: 110, cost: 400 }
 
   - name: Skeleton Turret
     type: Ranged
@@ -100,6 +103,10 @@ defenders:
     attackPower: 100
     cost: 1000
     color: ROSYBROWN
+    upgrades:
+      - { fireRate: 9, range: 160, attackPower: 110, cost: 600 }
+      - { fireRate: 8, range: 170, attackPower: 125, cost: 800 }
+      - { fireRate: 7, range: 200, attackPower: 150, cost: 1000 }
 
   - name: Skeleton Goo Gun
     type: Ranged Slow
@@ -109,6 +116,11 @@ defenders:
     slowPower: 0.7
     cost: 300
     color: STEELBLUE
+    upgrades:
+      - { fireRate: 19, range: 80, attackPower: 0, slowPower: 0.72, cost: 150 }
+      - { fireRate: 18, range: 85, attackPower: 0, slowPower: 0.74, cost: 200 }
+      - { fireRate: 17, range: 90, attackPower: 0, slowPower: 0.76, cost: 250 }
+      - { fireRate: 16, range: 100, attackPower: 0, slowPower: 0.8, cost: 300 }
 
   - name: Skeleton Rock Band
     type: Radial
@@ -118,6 +130,9 @@ defenders:
     areaAttack: true
     cost: 800
     color: GREENYELLOW
+    upgrades:
+      - { fireRate: 45, range: 80, attackPower: 25, cost: 800 }
+      - { fireRate: 35, range: 100, attackPower: 40, cost: 1500 }
 
   - name: Ferryman
     type: Ranged
@@ -127,6 +142,9 @@ defenders:
     attackPower: 10
     cost: 1000
     color: SADDLEBROWN
+    upgrades:
+      - { fireRate: 1.8, range: 300, attackPower: 15, cost: 800 }
+      - { fireRate: 1.5, range: 350, attackPower: 20, cost: 1500 }
 
   - name: Demigod
     type: Ranged
@@ -136,3 +154,6 @@ defenders:
     attackPower: 1000
     cost: 2000
     color: GOLD
+    upgrades:
+      - { fireRate: 90, range: 120, attackPower: 1500, cost: 2000 }
+      - { fireRate: 80, range: 150, attackPower: 2000, cost: 5000 }

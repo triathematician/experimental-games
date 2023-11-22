@@ -30,9 +30,10 @@ import javafx.stage.Stage
 class LevelApp: Application() {
     override fun start(stage: Stage) {
         val g = GameState()
-        val levelGraphics = LevelPane(g, GameController(g))
+        val c = GameController(g)
+        val levelGraphics = LevelPane(c)
         val gamePane = BorderPane().apply {
-            top = DefenderPalette(PALETTE_BOUNDS)
+            top = DefenderPalette(c, PALETTE_BOUNDS)
             center = levelGraphics
         }
         stage.title = "Greek Clash TD Level Tester"

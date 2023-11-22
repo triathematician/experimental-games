@@ -1,6 +1,8 @@
 package asher.greek.util
 
+import javafx.beans.property.Property
 import javafx.beans.property.StringProperty
+import javafx.beans.value.ObservableValue
 import javafx.event.EventTarget
 import javafx.geometry.BoundingBox
 import javafx.geometry.Bounds
@@ -118,7 +120,7 @@ fun text(loc: Point2, text: String, fontSize: Double? = null, fillColor: Color? 
 
 //region BUILDERS
 
-fun EventTarget.text(prop: StringProperty, xx: Number, yy: Number,
+fun EventTarget.text(prop: ObservableValue<String>, xx: Number, yy: Number,
                      f: Font? = null, fc: Color? = null, op:Text.() -> Unit = {}) = text(prop) {
     x = xx.toDouble()
     y = yy.toDouble()
@@ -127,7 +129,7 @@ fun EventTarget.text(prop: StringProperty, xx: Number, yy: Number,
     op()
 }
 
-fun EventTarget.righttext(prop: StringProperty, xx: Number, yy: Number, width: Number,
+fun EventTarget.righttext(prop: ObservableValue<String>, xx: Number, yy: Number, width: Number,
                      f: Font? = null, fc: Color? = null, op:Text.() -> Unit = {}) = text(prop) {
     x = xx.toDouble() - width.toDouble()
     y = yy.toDouble()
